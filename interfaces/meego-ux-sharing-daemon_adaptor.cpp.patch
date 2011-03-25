@@ -1,0 +1,18 @@
+--- meego-ux-sharing-daemon_adaptor.cpp.orig	2010-11-24 13:37:42.458921640 -0800
++++ meego-ux-sharing-daemon_adaptor.cpp	2010-11-24 13:39:04.415799094 -0800
+@@ -8,6 +8,8 @@
+  * Do not edit! All changes made to it will be lost.
+  */
+ 
++#include "../daemon/meegouxsharingdaemon.h"
++
+ #include "../interfaces/meego-ux-sharing-daemon_adaptor.h"
+ #include <QtCore/QMetaObject>
+ #include <QtCore/QByteArray>
+@@ -67,5 +69,6 @@
+ {
+     // handle method call com.meego.ux.sharing.Share
+     //return static_cast<YourObjectType *>(parent())->Share(service, sharetype, items, errmessage);
++    return qobject_cast<MeeGoUXSharingDaemon *>(parent())->Share(service, sharetype, items, errmessage);
+ }
+ 

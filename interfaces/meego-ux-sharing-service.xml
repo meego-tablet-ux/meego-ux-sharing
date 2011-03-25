@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<node name="/Service_Iface">
+
+  <interface name="com.meego.ux.sharing.service">
+
+    <doc:doc>
+      <doc:summary>Service interface.</doc:summary>
+    </doc:doc>
+
+    <method name="GetServiceName">
+      <arg name="servicename" type="s" direction="out">
+        <doc:doc>
+	  <doc:summary>The service name</doc:summary>
+        </doc:doc>
+      </arg>
+    </method>
+
+    <method name="GetDisplayName">
+      <arg name="displayname" type="s" direction="out">
+        <doc:doc>
+          <doc:summary>The localized service display name</doc:summary>
+        </doc:doc>
+      </arg>
+    </method>
+
+    <method name="GetIconPath">
+      <arg name="path" type="s" direction="out" />
+    </method>
+
+    <method name="GetServiceDesc">
+      <arg name="desc" type="s" direction="out" />
+    </method>
+
+    <method name="GetServiceType">
+      <arg name="servicetype" type="s" direction="out">
+        <doc:doc>
+	  <doc:summary>The service type - *NOT* to be confused with the sharing type! This is used for grouping in context menus/lists.</doc:summary>
+	</doc:doc>
+      </arg>
+    </method>
+
+    <method name="CanShareType">
+      <arg name="sharetype" type="s" direction="in">
+        <doc:doc>
+	  <doc:summary>The share type in question</doc:summary>
+	</doc:doc>
+      </arg>
+      <arg name="canshare" type="b" direction="out">
+        <doc:doc>
+	  <doc:summary>Whether the service supports the share type specified</doc:summary>
+	</doc:doc>
+      </arg>
+    </method>
+
+    <method name="GetServiceAvailable">
+      <arg name="avail" type="b" direction="out">
+        <doc:doc>
+	  <doc:summary>Whether the service is currently available</doc:summary>
+	</doc:doc>
+      </arg>
+    </method>
+
+    <method name="GetCredsState">
+      <arg name="state" type="u" direction="out">
+        <doc:doc>
+	  <doc:summary>If applicable, the state of credentials. Valid values are 0 (Valid), 1 (Invalid), and 2 (Unknown). If this is not applicable for your plugin, it is expected to return Valid.</doc:summary>
+	</doc:doc>
+      </arg>
+    </method>
+
+    <method name="GetServiceStateText">
+      <arg name="text" type="s" direction="out">
+        <doc:doc>
+	  <doc:summary>A localized, descriptive text of the current service state.</doc:summary>
+	</doc:doc>
+      </arg>
+    </method>
+
+    <method name="GetUIName">
+      <arg name="widgettype" type="s" direction="in">
+        <doc:doc>
+	  <doc:summary>The widget set being used. Right now, only QML custom UI widgets are supported.</doc:summary>
+	</doc:doc>
+      </arg>
+      <arg name="platform" type="s" direction="in">
+        <doc:doc>
+          <doc:summary>The platform this is running on - this is used for UI differentiation between platforms. If you only have 1 UI, ignore this value.</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="product" type="s" direction="in">
+        <doc:doc>
+          <doc:summary>The product this is running on - this is used for UI differentiation between products. If you only have 1 UI, ignore this value</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="sharetype" type="s" direction="in">
+        <doc:doc>
+          <doc:summary>The type of sharing being done. Same valid values as the CanShareType::sharetype argument. This allows for custom UI widgets on a per-service, per-datatype basis</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="sharecount" type="u" direction="in">
+        <doc:doc>
+	  <doc:summary>The number of items that the user is trying to share. This allows for custom UI widgets/flows based on item quantity - typical usage is just varying between single/multiple item UIs, but with actualy quantity being passed, things can get fancier</doc:summary>
+	</doc:doc>
+      </arg>
+      <arg name="uiname" type="s" direction="out">
+        <doc:doc>
+	  <doc:summary>The identifier for the requested UI widget/element name</doc:summary>
+	</doc:doc>
+      </arg>
+    </method>
+
+    <method name="GetSettingsURI">
+      <arg name="platform" type="s" direction="in">
+        <doc:doc>
+	  <doc:summary>A platform identifier that the plugin can use to decide how its settings should be invoked. If you only have 1 settings UI, you can ignore this value</doc:summary>
+	</doc:doc>
+      </arg>
+      <arg name="product" type="s" direction="in">
+        <doc:doc>
+	  <doc:summary>A product identifier that the plugin can use to decide how its settings should be invoked. If you only have 1 settings UI, you can ignore this value</doc:summary>
+	</doc:doc>
+      </arg>
+      <arg name="settingsuri" type="s" direction="out">
+        <doc:doc>
+	  <doc:summary>The URI needed for invoking the settings URI for this service on this platform - this URI will be launched via exec, so it can be an executable w/ arguments, or a dbus-send command, etc.</doc:summary>
+	</doc:doc>
+      </arg>
+    </method>
+
+    <signal name="ServiceChanged">
+      <doc:doc>
+        <doc:summary>Sent if *something* about the service changes (Availability, Creds State, Type of sharing supported, etc.). It's up to the client to figure out what changed and handle accordingly</doc:summary>
+      </doc:doc>
+      <arg name="service" type="s" direction="out">
+        <doc:doc>
+          <doc:summary>The name of the service that is sending the signal</doc:summary>
+        </doc:doc>
+      </arg>
+    </signal>
+
+  </interface>
+</node>
+

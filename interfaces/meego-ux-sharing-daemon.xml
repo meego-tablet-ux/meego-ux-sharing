@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<node name="/Daemon_Iface">
+
+  <interface name="com.meego.ux.sharing">
+
+    <doc:doc>
+      <doc:summary>Core interface.</doc:summary>
+    </doc:doc>
+
+    <method name="GetAllServices">
+      <arg name="services" type="as" direction="out">
+        <doc:doc>
+          <doc:summary>The list of sharing service names that are available</doc:summary>
+        </doc:doc>
+      </arg>
+    </method>
+
+    <method name="GetServicesForType">
+      <arg name="type" type="s" direction="in">
+        <doc:doc>
+          <doc:summary>The type of data to share. Valid values include x-meego-ux-sharing/image, x-meego-ux-sharing/video, x-meego-ux-sharing/music, or any random value as defined by plugins to the sharing service</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="services" type="as" direction="out">
+        <doc:doc>
+          <doc:summary>The list of sharing service names that are available for the specified type</doc:summary>
+        </doc:doc>
+      </arg>
+    </method>
+
+    <method name="RescanPlugins">
+      <doc:doc>
+        <doc:summary>Cause the daemon to rescan the available plugins</doc:summary>
+      </doc:doc>
+    </method>
+
+    <method name="Share">
+      <annotation name="com.trolltech.QtDBus.QtTypeName.In2" value="ArrayOfShareItemStruct" />
+      <arg name="service" type="s" direction="in">
+        <doc:doc>
+          <doc:summary>The name of the service to perform the sharing operation with</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="sharetype" type="s" direction="in">
+        <doc:doc>
+          <doc:summary>The share type to perform</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="items" type="a(sa{ss})" direction="in">
+        <doc:doc>
+          <doc:summary>The array of items to share</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="opid" type="i" direction="out">
+        <doc:doc>
+          <doc:summary>The operation id that will be used for ShareProgress signals. -1 on error.</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="errmessage" type="s" direction="out">
+        <doc:doc>
+          <doc:summary>If opid == -1, then errmessage should contain a user-facing descriptive error message</doc:summary>
+        </doc:doc>
+      </arg>
+    </method>
+
+    <method name="CancelShare">
+      <arg name="opid" type="i" direction="in">
+        <doc:doc>
+          <doc:summary>The sharing id to cancel</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="result" type="b" direction="out">
+        <doc:doc>
+          <doc:summary>True if the cancel was a success, false if it failed</doc:summary>
+        </doc:doc>
+      </arg>
+    </method>
+
+
+    <signal name="ServiceAdded">
+      <arg name="name" type="s" direction="out"/>
+      <arg name="type" type="s" direction="out"/>
+    </signal>
+
+    <signal name="ServiceRemoved">
+      <arg name="name" type="s" direction="out"/>
+      <arg name="type" type="s" direction="out"/>
+    </signal>
+
+    <signal name="ShareProgress">
+      <arg name="service" type="s" direction="out">
+        <doc:doc>
+          <doc:summary>The name of the service that is sending the signal</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="opid" type="i" direction="out"/>
+      <arg name="progress" type="i" direction="out">
+        <doc:doc>
+          <doc:summary>The progress in integer percents (50 == 50%), or -1 if the share failed.</doc:summary>
+        </doc:doc>
+      </arg>
+      <arg name="message" type="s" direction="out">
+        <doc:doc>
+          <doc:summary>A user-facing status text message - can be empty. Also used as the user-facing error message if progress == -1</doc:summary>
+        </doc:doc>
+      </arg>
+    </signal>
+
+  </interface>
+</node>

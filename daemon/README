@@ -1,0 +1,4 @@
+Command to send to existing /usr/bin/msd when installing a new plugin or new version of a plugin:
+#dbus-send --session --print-reply --dest=com.meego.ux.sharing /com/meego/ux/sharing com.meego.meego.ux.sharing.RescanPlugins
+
+However, I have to figure out how to do this in the user's DBUS session from an RPM post-install section...
