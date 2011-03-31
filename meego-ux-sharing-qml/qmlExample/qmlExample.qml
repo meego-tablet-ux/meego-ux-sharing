@@ -51,7 +51,7 @@ Rectangle {
                 height: parent.height
                 width: parent.width
                 Text {
-                    text: "Image"
+                    text: qsTr("Image")
                     anchors.fill: parent
                 }
                 MouseArea {
@@ -68,7 +68,7 @@ Rectangle {
                 height: parent.height
                 width: parent.width
                 Text {
-                    text: "Video"
+                    text: qsTr("Video")
                     anchors.fill: parent
                 }
                 MouseArea {
@@ -85,7 +85,7 @@ Rectangle {
                 height: parent.height
                 width: parent.width
                 Text {
-                    text: "Audio"
+                    text: qsTr("Audio")
                     anchors.fill: parent
                 }
                 MouseArea {
