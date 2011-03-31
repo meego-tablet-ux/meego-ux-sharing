@@ -15,7 +15,7 @@ Rectangle {
   Text {
     height: 200
     width: 200
-    text: "BAR VIDEO SINGLE!!!"
+    text: qsTr("BAR VIDEO SINGLE!!!")
     color: "yellow"
   }
 }

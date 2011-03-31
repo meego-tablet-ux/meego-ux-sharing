@@ -15,6 +15,6 @@ Rectangle {
   Text {
     height: 200
     width: 200
-    text: "BAR IMAGE SINGLE!!!"
+    text: qsTr("BAR IMAGE SINGLE!!!")
   }
 }

@@ -26,7 +26,7 @@ Rectangle {
     id: infoText
     height: 60
     width: 200
-    text: "Single sharing file - Are you sure?"
+    text: qsTr("Single sharing file - Are you sure?")
   }
   Text {
     id: btnYes
@@ -36,7 +36,7 @@ Rectangle {
     anchors.topMargin: 10
     anchors.left: infoText.left
     anchors.leftMargin: 10
-    text: "Yes"
+    text: qsTr("Yes")
     MouseArea {
       anchors.fill: parent
       onClicked: {
@@ -75,7 +75,7 @@ Rectangle {
     anchors.topMargin: 10
     anchors.right: infoText.right
     anchors.rightMargin: 10
-    text: "No"
+    text: qsTr("No")
     MouseArea {
       anchors.fill: parent
       onClicked: {

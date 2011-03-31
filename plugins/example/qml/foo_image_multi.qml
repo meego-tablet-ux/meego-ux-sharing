@@ -23,7 +23,7 @@ Rectangle {
     //access all of the Q_PROPERTY properties and Q_INVOKABLE member methods
     //exposed by the class. For further details on the class, please see the
     //meegouxsharingclientqmlobj.h file, included in the libmeegouxsharingqml-devel package.
-    text: "Share Type: " + sharingObj.shareTypeName + "\nFile Count: " + sharingObj.filesToShare.length
+    text: qsTr("Share Type: %1\nFile Count: %2").arg(sharingObj.shareTypeName, sharingObj.filesToShare.length)
   }
   ListView {
     id: fileList
