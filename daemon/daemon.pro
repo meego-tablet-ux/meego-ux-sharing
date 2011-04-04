@@ -3,7 +3,6 @@ TEMPLATE = app
 QT += dbus
 
 TARGET = msd
-LIBS += -L../plugins/libmeegouxsharingserviceplugin -lmeegouxsharingserviceplugin
 
 INCLUDEPATH += ../common ../interfaces
 
