@@ -2,13 +2,14 @@
  * Copyright 2011 Intel Corporation.
  *
  * This program is licensed under the terms and conditions of the
- * Apache License, version 2.0.  The full text of the Apache License is at 	
+ * Apache License, version 2.0.  The full text of the Apache License is at
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 #include "meegouxsharingclientservicemodel.h"
 #include "meegouxsharingclientcore.h"
 #include "meegouxsharingclientservice.h"
+#include <meegouxsharingcommon.h>
 
 enum SharingDataRoles {
     SharingRoleName        = Qt::UserRole +  0,  //QString
@@ -95,7 +96,8 @@ void MeeGoUXSharingClientServiceModel::filter()   //Private
         MeeGoUXSharingClientService *clientService = new MeeGoUXSharingClientService(service,
                                                                                  mCore->getConnection(),
                                                                                  this);
-        if (clientService->getServiceType() == mServiceType) {
+        if (clientService->getServiceType() == mServiceType
+            && clientService->getCredsState() == CredsStateValid) {
             mServiceList.append(service);
             connect(clientService,
                     SIGNAL(ServiceChanged(MeeGoUXSharingClientService*)),
