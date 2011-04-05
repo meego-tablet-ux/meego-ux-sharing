@@ -172,7 +172,7 @@ QStringList MeeGoUXSharingClientServiceModel::getServiceTypesList()
     QStringList svcs;
     foreach (MeeGoUXSharingClientService *svc, mServices)
         svcs.append(svc->getDisplayName());
-    return svcs;
+    return svcs.sort(), svcs;
 }
 
 //Protected slots:
