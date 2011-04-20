@@ -5,7 +5,7 @@ includedir=${prefix}/include/meego-ux-sharing/plugin
 
 Name: libmeegouxsharingserviceplugin
 Description: Plugin library for meego-ux-sharing
-Version: 0.1.0
+Version: 0.1.4
 Libs: -L${libdir} -lmeegouxsharingserviceplugin
 Cflags: -I${includedir} -DQML_TARGET_BASE_PATH=\\\"/usr/lib/qt4/imports/MeeGo/Sharing/plugins/\\\"
 Requires: QtDBus meego-ux-sharing

@@ -5,7 +5,7 @@ includedir=${prefix}/include/meego-ux-sharing/client
 
 Name: libmeegouxsharingclient
 Description: Qt Client library for meego-ux-sharing
-Version: 0.1.0
+Version: 0.1.4
 Libs: -L${libdir} -lmeegouxsharingclient
 Cflags: -I${includedir}
 Requires: QtDBus meego-ux-sharing
