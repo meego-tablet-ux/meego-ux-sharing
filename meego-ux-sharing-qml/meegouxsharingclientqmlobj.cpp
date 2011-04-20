@@ -172,6 +172,14 @@ void MeeGoUXSharingClientQmlObj::modifyHashEntryForFile(QString file, QString pa
     mItems[file].params[paramName] = newParamVal;
 }
 
+QString MeeGoUXSharingClientQmlObj::getHashEntryForFile(QString file, QString paramName, QString defaultVal)
+{
+    if (!mItems.contains(file))
+        return defaultVal;
+
+    return mItems[file].params.value(paramName, defaultVal);
+}
+
 int MeeGoUXSharingClientQmlObj::shareSimple()
 {
     if (!mService) {

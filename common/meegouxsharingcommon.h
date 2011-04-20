@@ -16,6 +16,7 @@
 const QString MEEGO_SHARE_TYPE_IMAGE = "x-meego-ux-sharing/image";
 const QString MEEGO_SHARE_TYPE_VIDEO = "x-meego-ux-sharing/video";
 const QString MEEGO_SHARE_TYPE_AUDIO = "x-meego-ux-sharing/audio";
+const QString MEEGO_SHARE_TYPE_TEXT  = "x-meego-ux-sharing/text";
 
 
 struct MeeGoUXSharingServiceInfo {
@@ -32,7 +33,8 @@ enum MeeGoUXSharingCredentialsState {
 enum MeeGoUXSharingType {
     ShareTypeImage = 0,
     ShareTypeVideo = 1,
-    ShareTypeAudio = 2
+    ShareTypeAudio = 2,
+    ShareTypeText = 3
 };
 
 Q_DECLARE_METATYPE(MeeGoUXSharingServiceInfo)

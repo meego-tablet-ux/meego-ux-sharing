@@ -25,6 +25,9 @@ QString MeeGoUXSharingClient::TranslateShareType(MeeGoUXSharingType type)
     case ShareTypeAudio:
         return MEEGO_SHARE_TYPE_AUDIO;
         break;
+    case ShareTypeText:
+        return MEEGO_SHARE_TYPE_TEXT;
+        break;
     default:
         return QString();
         break;

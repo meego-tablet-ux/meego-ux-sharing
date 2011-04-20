@@ -44,7 +44,8 @@ public:
     enum ShareType {
         ShareTypeImage = 0,
         ShareTypeVideo = 1,
-        ShareTypeAudio = 2
+        ShareTypeAudio = 2,
+        ShareTypeText  = 3,
     };
 
     //First, you set the share type
@@ -88,6 +89,7 @@ public:
     Q_INVOKABLE void removeFiles(QStringList files);
     Q_INVOKABLE void addHashEntryToFile(QString file, QString paramName, QString paramVal);
     Q_INVOKABLE void modifyHashEntryForFile(QString file, QString paramName, QString newParamVal);
+    Q_INVOKABLE QString getHashEntryForFile(QString file, QString paramName, QString defaultVal = "");
     Q_INVOKABLE int shareSimple();
     Q_INVOKABLE QString getLastShareError();
     Q_INVOKABLE void clearFiles();

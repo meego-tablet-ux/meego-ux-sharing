@@ -96,6 +96,26 @@ Rectangle {
                     }
                 }
             }
+            Rectangle {
+                id: btnText
+                anchors.left: btnAudio.right
+                height: parent.height
+                width: parent.width
+                Text {
+                    text: qsTr("Text")
+                    anchors.fill: parent
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        sharingObj.clearFiles();
+                        sharingObj.addFile("/tmp/body.txt");
+                        sharingObj.addHashEntryToFile("/tmp/body.txt", "subject", "This is a test subject!");
+                        sharingObj.shareType = MeeGoUXSharingClientQmlObj.ShareTypeText
+                        serviceTypeList.model = sharingObj.serviceTypes
+                    }
+                }
+            }
         }
 
         Item {
