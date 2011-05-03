@@ -5,6 +5,7 @@ SUBDIRS += plugins
 SUBDIRS += daemon
 SUBDIRS += libmeegouxsharingclient
 SUBDIRS += meego-ux-sharing-qml
+SUBDIRS += meego-ux-sharing-qml-ui
 
 OTHER_FILES += interfaces/*.xml
 
