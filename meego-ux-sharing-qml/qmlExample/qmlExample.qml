@@ -116,6 +116,26 @@ Rectangle {
                     }
                 }
             }
+            Rectangle {
+                id: btnVCard
+                anchors.left: btnText.right
+                height: parent.height
+                width: parent.width
+                Text {
+                    text: qsTr("vCard")
+                    anchors.fill: parent
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        sharingObj.clearFiles();
+                        sharingObj.addFile("/tmp/vcard.vcf");
+                        sharingObj.addHashEntryToFile("/tmp/vcard.vcf", "subject", "This is a vcard subject!");
+                        sharingObj.shareType = MeeGoUXSharingClientQmlObj.ShareTypeVCard
+                        serviceTypeList.model = sharingObj.serviceTypes
+                    }
+                }
+            }
         }
 
         Item {

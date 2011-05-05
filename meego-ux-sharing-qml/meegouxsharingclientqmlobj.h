@@ -46,6 +46,7 @@ public:
         ShareTypeVideo = 1,
         ShareTypeAudio = 2,
         ShareTypeText  = 3,
+        ShareTypeVCard = 4,
     };
 
     //First, you set the share type

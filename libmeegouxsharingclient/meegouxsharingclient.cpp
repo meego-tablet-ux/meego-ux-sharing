@@ -28,6 +28,9 @@ QString MeeGoUXSharingClient::TranslateShareType(MeeGoUXSharingType type)
     case ShareTypeText:
         return MEEGO_SHARE_TYPE_TEXT;
         break;
+    case ShareTypeVCard:
+        return MEEGO_SHARE_TYPE_VCARD;
+        break;
     default:
         return QString();
         break;
