@@ -14,7 +14,7 @@ Labs.Window {
         parent: scene.content
 
 
-        Labs.TopItem {
+        TopItem {
             id: topItem
         }
 
