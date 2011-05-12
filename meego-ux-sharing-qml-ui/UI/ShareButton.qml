@@ -17,11 +17,13 @@ ShareObj {
     signal shareAllClicked();
 
     property bool shareAll: false
+    property int mouseX
+    property int mouseY
 
     function doShareAll() {
         if (shareCount == 0)
             return;
-        var pos = topItem.topItem.mapFromItem(shareBtn, shareBtn.x+shareBtn.width, shareBtn.y);
+        var pos = mapToItem(topItem.topItem, mouseX, mouseY); //shareBtn.x+shareBtn.width, shareBtn.y);
         showContextTypes(pos.x, pos.y);
     }
 
@@ -44,9 +46,11 @@ ShareObj {
 
         onClicked: {
             if (shareAll && shareCount == 0) {
+                mouseX = mouse.x;
+                mouseY = mouse.y;
                 shareContainer.shareAllClicked();
             } else {
-                var pos = topItem.topItem.mapFromItem(shareBtn, shareBtn.x+shareBtn.width, shareBtn.y);
+                var pos = mapToItem(topItem.topItem, mouse.x, mouse.y); //shareBtn.x+shareBtn.width, shareBtn.y);
                 parent.showContextTypes(pos.x, pos.y);
             }
         }

@@ -6,6 +6,8 @@ qmldir.files += $$TARGET
 qmldir.path += $$[QT_INSTALL_IMPORTS]/MeeGo/Sharing/
 INSTALLS += qmldir
 
+OTHER_FILES += sharetest.qml
+
 PKG_NAME = meego-ux-sharing-qml-ui
 TRANSLATIONS += $${HEADERS} \
         $${SOURCES}

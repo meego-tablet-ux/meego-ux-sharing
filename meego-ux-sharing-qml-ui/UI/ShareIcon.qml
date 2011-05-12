@@ -19,11 +19,13 @@ ShareObj {
     signal shareAllClicked();
 
     property bool shareAll: false
+    property int mouseX
+    property int mouseY
 
     function doShareAll() {
         if (shareCount == 0)
             return;
-        var pos = topItem.topItem.mapFromItem(shareImg, shareImg.x+shareImg.width, shareImg.y);
+        var pos = mapToItem(topItem.topItem, mouseX /*shareImg.x+shareImg.width*/, mouseY /*shareImg.y*/);
         showContextTypes(pos.x, pos.y);
     }
 
@@ -33,8 +35,8 @@ ShareObj {
 
     IconButton {
         id: shareImg
-        icon: "image://theme/media/icn_share_up"
-        iconDown: "image://theme/media/icn_share_dn"
+        icon: "image://themedimage/images/media/icn_share_up"
+        iconDown: "image://themedimage/images/media/icn_share_dn"
 
         anchors.top: parent.top
         anchors.left: parent.left
@@ -47,9 +49,11 @@ ShareObj {
 
         onClicked: {
             if (shareAll && shareCount == 0) {
+                shareContainer.mouseX = mouse.x;
+                shareContainer.mouseY = mouse.y;
                 shareContainer.shareAllClicked();
             } else {
-                var pos = topItem.topItem.mapFromItem(shareImg, shareImg.x+shareImg.width, shareImg.y);
+                var pos = mapToItem(topItem.topItem, mouse.x /*shareImg.x+shareImg.width*/, mouse.y /*shareImg.y*/);
                 parent.showContextTypes(pos.x, pos.y);
             }
         }

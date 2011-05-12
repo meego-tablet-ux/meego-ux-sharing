@@ -9,11 +9,13 @@
 import Qt 4.7
 import MeeGo.Sharing 0.1
 import MeeGo.Components 0.1
-import MeeGo.Labs.Components 0.1 as Labs
 
 Item {
 
     id: shareContainer
+    //anchors.fill: parent
+    height: childrenRect.height
+    width: childrenRect.width
 
     property alias shareCount: sharingObj.fileCount
     property alias shareType: sharingObj.shareType
@@ -59,33 +61,33 @@ Item {
     function showContextTypes(x, y) {
         if (sharingObj.fileCount == 0)
             return;
-        ctxServiceTypes.model = sharingObj.serviceTypes;
-        ctxServiceTypes.mouseX = x;
-        ctxServiceTypes.mouseY = y;
-        ctxServiceTypes.visible = true;
+        ctxServiceTypesAction.model = sharingObj.serviceTypes;
+        ctxServiceTypes.myX = x;
+        ctxServiceTypes.myY = y;
+        ctxServiceTypes.setPosition(x, y);
+        ctxServiceTypes.show();
     }
 
     function showContext(svcType, x, y) {
         if (sharingObj.fileCount == 0)
             return;
         sharingObj.serviceType = svcType;
-        ctxServices.payload = sharingObj.serviceModel;
+        ctxServicesAction.payload = sharingObj.serviceModel;
         var services = sharingObj.serviceModel.getServiceTypesList();
-        ctxServices.model = services;
-        ctxServices.mouseX = x;
-        ctxServices.mouseY = y;
+        ctxServicesAction.model = services;
+
+        ctxServices.setPosition(x, y);
         if ((svcType == qsTr("Email")) && (services.length == 1))
             selectService(services[0], sharingObj.serviceModel);
         else
-            ctxServices.visible = true;
+            ctxServices.show();
     }
 
     function selectService(svcDispName, svcModel) {
         var svcName = svcModel.getServiceNameFromDisplayName(svcDispName);
         sharingObj.serviceName = svcName;
         loaderSource = sharingObj.getCustomUIName("ux", "blah")
-        mdlSurface.content = shareDlg;
-        mdlSurface.visible = true;
+        mdlSurface.show();
     }
 
 
@@ -93,45 +95,49 @@ Item {
         catalog: "meego-ux-sharing-qml-ui"
     }
 
-    Labs.ContextMenu {
+    ContextMenu {
         id: ctxServiceTypes
+        property int myX
+        property int myY
+        onRejected: ctxServiceTypes.hide()
 
-        onTriggered: {
-            sharingObj.serviceType = model[index];
-            var services = sharingObj.serviceModel.getServiceTypesList();
-            if ((model[index] == qsTr("Email")) && ( services.length == 1))
-                selectService(services[0], sharingObj.serviceModel);
-            else
-                showContext(model[index], mouseX, mouseY);
+        content: ActionMenu {
+            id: ctxServiceTypesAction
+            onTriggered: {
+                sharingObj.serviceType = model[index];
+                var services = sharingObj.serviceModel.getServiceTypesList();
+                if ((model[index] == qsTr("Email")) && ( services.length == 1))
+                    selectService(services[0], sharingObj.serviceModel);
+                else
+                    showContext(model[index], ctxServiceTypes.myX, ctxServiceTypes.myY);
+                ctxServiceTypes.hide();
+            }
         }
     }
 
-    Labs.ContextMenu {
+    ContextMenu {
         id: ctxServices
+        onRejected: ctxServices.hide()
 
-        onTriggered: {
-            var svcDispName = model[index];
-            var svcName = payload.getServiceNameFromDisplayName(svcDispName);
-            sharingObj.serviceName = svcName;
-            loaderSource = sharingObj.getCustomUIName("ux", "blah")
-            mdlSurface.content = shareDlg;
-            mdlSurface.visible = true;
+        content: ActionMenu {
+            id: ctxServicesAction
+
+            onTriggered: {
+                var svcDispName = model[index];
+                selectService(model[index], payload);
+//                var svcName = payload.getServiceNameFromDisplayName(svcDispName);
+//                sharingObj.serviceName = svcName;
+//                loaderSource = sharingObj.getCustomUIName("ux", "blah")
+                ctxServices.hide();
+//                mdlSurface.show();
+            }
         }
     }
 
-    Labs.ModalSurface {
+    ModalFog {
         id: mdlSurface
         autoCenter: true
-    }
-
-    TopItem {
-        id: screenItem
-    }
-
-    Component {
-        id: shareDlg
-
-        BorderImage {
+        modalSurface: BorderImage {
             id: dlgItem
             anchors.centerIn: parent
             border.top: 14
@@ -139,7 +145,7 @@ Item {
             border.right: 20
             border.bottom: 20
 
-            source: "image://theme/notificationBox_bg"
+            source: "image://themedimage/images/notificationBox_bg"
             width: flickable.width
             height: flickable.height
 
@@ -154,8 +160,8 @@ Item {
                 target: sharingObj
                 onShareProgress: {
                     //For now, only worry about our most recent share op
-                    console.log("Got share progress, service: " + serviceName + ", opid: " + opid + ", progress: " + progress + ", msg: " + message + ", curShareID: " + shareID);
-                    if (opid == shareID) {
+                    console.log("Got share progress, service: " + serviceName + ", opid: " + opid + ", progress: " + progress + ", msg: " + message + ", curShareID: " + dlgItem.shareID);
+                    if (opid == dlgItem.shareID) {
                         if (progress == -1) {
                             //Error dlg!
                             shareError = message;
@@ -169,10 +175,10 @@ Item {
 
             Connections {
                 target: mdlSurface
-                onClose: {
-                    shareID = -1;
-                    shareProgressL = 0;
-                    shareError = "";
+                onClosed: {
+                    dlgItem.shareID = -1;
+                    dlgItem.shareProgressL = 0;
+                    dlgItem.shareError = "";
                 }
             }
 
@@ -207,16 +213,16 @@ Item {
                     target: customLoader.item
                     onCancel: {
                         customLoader.source = "";
-                        mdlSurface.close();
+                        mdlSurface.hide();
                     }
                     onShared: {
                         console.log("Shared, with share ID " + shareid);
                         customLoader.source = "";
-                        shareID = shareid;
-                        if (shareID != -1)
+                        dlgItem.shareID = shareid;
+                        if (dlgItem.shareID != -1)
                             customLoader.sourceComponent = progressDlg;
                         else {
-                            mdlSurface.close();
+                            mdlSurface.hide();
                             sharingObj.clearFiles();
                         }
                     }
@@ -231,6 +237,10 @@ Item {
             }
 
         }
+    }
+
+    TopItem {
+        id: screenItem
     }
 
     Component {
@@ -253,7 +263,7 @@ Item {
                 anchors.topMargin: 10
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
-                    mdlSurface.close();
+                    mdlSurface.hide();
                 }
             }
             onHeightChanged: {
@@ -284,7 +294,7 @@ Item {
                 anchors.topMargin: 10
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
-                    mdlSurface.close();
+                    mdlSurface.hide();
                 }
             }
             onHeightChanged: {

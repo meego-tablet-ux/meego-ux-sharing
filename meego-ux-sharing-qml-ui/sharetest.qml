@@ -2,16 +2,16 @@ import Qt 4.7
 import MeeGo.Components 0.1
 import MeeGo.Sharing 0.1
 import MeeGo.Sharing.UI 0.1
-import MeeGo.Labs.Components 0.1 as Labs
 
-Labs.Window {
-//    width: 640
-//    height: 480
-    //color: "grey"
-    id: scene
+Window {
+    id: window
+
+    Theme {
+        id: theme
+    }
 
     Item {
-        parent: scene.content
+        anchors.fill: parent
 
 
         TopItem {
@@ -27,8 +27,8 @@ Labs.Window {
             anchors.left: parent.left
             text: "Video"
             onClicked: {
-                sharing.shareType = MeegoSharingClientQmlObj.ShareTypeVideo;
-                shareObj.shareType = MeegoSharingClientQmlObj.ShareTypeVideo;
+                sharing.shareType = MeeGoUXSharingClientQmlObj.ShareTypeVideo;
+                shareObj.shareType = MeeGoUXSharingClientQmlObj.ShareTypeVideo;
             }
         }
 
@@ -41,8 +41,8 @@ Labs.Window {
             anchors.leftMargin: 5
             text: "Image"
             onClicked: {
-                sharing.shareType = MeegoSharingClientQmlObj.ShareTypeImage;
-                shareObj.shareType = MeegoSharingClientQmlObj.ShareTypeImage;
+                sharing.shareType = MeeGoUXSharingClientQmlObj.ShareTypeImage;
+                shareObj.shareType = MeeGoUXSharingClientQmlObj.ShareTypeImage;
             }
         }
 
@@ -55,8 +55,8 @@ Labs.Window {
             anchors.leftMargin: 5
             text: "Audio"
             onClicked: {
-                sharing.shareType = MeegoSharingClientQmlObj.ShareTypeAudio;
-                shareObj.shareType = MeegoSharingClientQmlObj.ShareTypeAudio;
+                sharing.shareType = MeeGoUXSharingClientQmlObj.ShareTypeAudio;
+                shareObj.shareType = MeeGoUXSharingClientQmlObj.ShareTypeAudio;
             }
         }
 
@@ -123,7 +123,7 @@ Labs.Window {
 
         Rectangle {
             id: rect1
-            color: "white"
+            color: "blue"
             width: 100
             height: 50
             anchors.top: toggleVisible.top
@@ -137,7 +137,6 @@ Labs.Window {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: textTypes.text = topItem.topItem.parent.parent.toString()
                 onPressAndHold: {
                     var ctxList = ["First entry", "Second Entry"]
                     var x;
@@ -146,29 +145,42 @@ Labs.Window {
                         console.log("Adding share type " + svcTypes[x] + "to array " + ctxList);
                         ctxList = ctxList.concat(svcTypes[x]);
                     }
-                    objContext.model = ctxList;
-                    objContext.visible = true;
+                    objContextAction.model = ctxList;
+                    var pos = mapToItem(topItem.topItem, rect1.width, rect1.height/2)
+                    objContext.myX = pos.x;
+                    objContext.myY = pos.y;
+                    objContext.setPosition(pos.x, pos.y)
+                    objContext.show();
+
                 }
             }
 
-            Labs.ContextMenu {
+            ContextMenu {
                 id: objContext
-                mouseX: parent.x + parent.width
-                mouseY: parent.y + (parent.height/2)
-                onTriggered: {
-                    var svcTypes = shareObj.serviceTypes;
-                    var didShare = false;
-                    for (x in svcTypes) {
-                        if (model[index] == svcTypes[x]) {
-                            shareObj.showContext(model[index], mouseX, mouseY);
-                            didShare = true;
-                            break;
+                property int myX
+                property int myY
+
+                onRejected: objContext.hide()
+                content: ActionMenu {
+                    id: objContextAction
+
+                    onTriggered: {
+                        var svcTypes = shareObj.serviceTypes;
+                        var didShare = false;
+                        for (x in svcTypes) {
+                            if (model[index] == svcTypes[x]) {
+                                shareObj.showContext(model[index], objContext.myX, objContext.myY);
+                                didShare = true;
+                                break;
+                            }
                         }
-                    }
-                    if (!didShare) {
-                        //Handle other context menu options here...
+                        if (!didShare) {
+                            //Handle other context menu options here...
+                        }
+                        objContext.hide();
                     }
                 }
+
 
             }
 
@@ -190,19 +202,31 @@ Labs.Window {
                 anchors.fill: parent
                 onPressAndHold: {
                     var ctxList = ["First entry", "Second Entry", "Share"]
-                    var pos = topItem.topItem.mapFromItem(rect2, mouse.x, mouse.y)
-                    ctxShare.mouseX = pos.x;
-                    ctxShare.mouseY = pos.y;
-                    ctxShare.model = ctxList;
-                    ctxShare.visible = true;
+                    var pos = mapToItem(topItem.topItem, mouse.x, mouse.y)
+                    ctxShare.setPosition(pos.x, pos.y);
+                    ctxShare.myX = pos.x;
+                    ctxShare.myY = pos.y;
+                    ctxShareAction.model = ctxList;
+                    ctxShare.show();
                 }
             }
-            Labs.ContextMenu {
+            ContextMenu {
                 id: ctxShare
+                onRejected: ctxShare.hide()
+                property int myX
+                property int myY
 
-                onTriggered: {
-                    if (model[index] == "Share") {
-                        shareObj.showContextTypes(mouseX, mouseY);
+                content: ActionMenu {
+                    id: ctxShareAction
+
+                    onTriggered: {
+                        if (model[index] == "Share") {
+                            shareObj.showContextTypes(ctxShare.myX, ctxShare.myY);
+                        } else {
+                            console.log("Didn't get to Share in context: '" + model[index] + "'");
+                        }
+
+                        ctxShare.hide()
                     }
                 }
 
