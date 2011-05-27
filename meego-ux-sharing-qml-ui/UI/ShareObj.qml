@@ -30,6 +30,8 @@ Item {
 
     property string loaderSource: ""
 
+    signal sharingComplete()
+
     function addItem(name) {
         sharingObj.addFile(name);
     }
@@ -214,24 +216,29 @@ Item {
                     onCancel: {
                         customLoader.source = "";
                         mdlSurface.hide();
+			sharingContainer.sharingComplete();
                     }
                     onShared: {
                         console.log("Shared, with share ID " + shareid);
                         customLoader.source = "";
                         dlgItem.shareID = shareid;
-                        if (dlgItem.shareID != -1)
-                            customLoader.sourceComponent = progressDlg;
-                        else {
+                        if (dlgItem.shareID != -1) {
+                            console.log("Progress dialog goes here..."); //customLoader.sourceComponent = progressDlg;
+                            mdlSurface.hide();
+                        } else {
                             mdlSurface.hide();
                             sharingObj.clearFiles();
                         }
+			sharingContainer.sharingComplete();
                     }
                     onShareError: {
                         console.log("Share error occured: " + errMsg);
                         customLoader.source = "";
                         shareError = errMsg;
-                        customLoader.sourceComponent = errorDlg;
+//                        customLoader.sourceComponent = errorDlg;
                         sharingObj.clearFiles();
+                        mdlSurface.hide();
+			sharingContainer.sharingComplete();
                     }
                 }
             }
