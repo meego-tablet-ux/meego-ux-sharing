@@ -108,6 +108,31 @@ Window {
             }
         }
 
+
+        InfoBar {
+            id: infoBar
+            text: "This is an InfoBar! Now with really really really really really really long text!!!"
+            anchors.top: videoBtn.top
+            anchors.left: clearSharing.right
+            anchors.leftMargin: 20
+        }
+
+        Button {
+            id: showHideInfo
+            text: "Toggle InfoBar"
+            anchors.top: videoBtn.top
+            anchors.left: infoBar.right
+            anchors.leftMargin: 5
+            property bool ibVisible: false
+            onClicked: {
+                if (ibVisible)
+                    infoBar.hide();
+                else
+                    infoBar.show();
+                ibVisible = !ibVisible;
+            }
+        }
+
         Button {
             id: toggleVisible
             width: 100

@@ -181,6 +181,7 @@ Item {
                     dlgItem.shareID = -1;
                     dlgItem.shareProgressL = 0;
                     dlgItem.shareError = "";
+                    shareContainer.sharingComplete();
                 }
             }
 
@@ -216,7 +217,7 @@ Item {
                     onCancel: {
                         customLoader.source = "";
                         mdlSurface.hide();
-			sharingContainer.sharingComplete();
+			shareContainer.sharingComplete();
                     }
                     onShared: {
                         console.log("Shared, with share ID " + shareid);
@@ -229,7 +230,7 @@ Item {
                             mdlSurface.hide();
                             sharingObj.clearFiles();
                         }
-			sharingContainer.sharingComplete();
+			shareContainer.sharingComplete();
                     }
                     onShareError: {
                         console.log("Share error occured: " + errMsg);
@@ -238,7 +239,7 @@ Item {
 //                        customLoader.sourceComponent = errorDlg;
                         sharingObj.clearFiles();
                         mdlSurface.hide();
-			sharingContainer.sharingComplete();
+			shareContainer.sharingComplete();
                     }
                 }
             }
