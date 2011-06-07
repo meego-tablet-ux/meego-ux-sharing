@@ -10,7 +10,8 @@ OTHER_FILES += sharetest.qml
 
 PKG_NAME = meego-ux-sharing-qml-ui
 TRANSLATIONS += $${HEADERS} \
-        $${SOURCES}
+        $${SOURCES} \
+        $${TARGET}/*.qml
 dist.commands += lupdate $${TRANSLATIONS} -ts $${TSDIR}/$${PKG_NAME}.ts
 
 QMAKE_EXTRA_TARGETS += dist
