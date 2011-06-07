@@ -50,8 +50,8 @@ ShareObj {
                 mouseY = mouse.y;
                 shareContainer.shareAllClicked();
             } else {
-                var pos = mapToItem(topItem.topItem, mouse.x, mouse.y); //shareBtn.x+shareBtn.width, shareBtn.y);
-                parent.showContextTypes(pos.x, pos.y);
+                //var pos = mapToItem(topItem.topItem, mouse.x, mouse.y); //shareBtn.x+shareBtn.width, shareBtn.y);
+                parent.showContextTypes(0, 0);
             }
         }
     }

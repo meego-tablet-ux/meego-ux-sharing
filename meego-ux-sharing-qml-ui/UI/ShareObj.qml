@@ -9,6 +9,7 @@
 import Qt 4.7
 import MeeGo.Sharing 0.1
 import MeeGo.Components 0.1
+import MeeGo.Ux.Gestures 0.1
 
 Item {
 
@@ -25,10 +26,16 @@ Item {
         id: sharingObj
         shareType: MeeGoUXSharingClientQmlObj.ShareTypeImage;
     }
+    property variant catModel: null
+    property variant svcModel: null
+    property variant svcPayload: null
 
     property variant localStorage: null
 
     property string loaderSource: ""
+    property string loaderState: ""
+    property int defaultMargin: 15
+
 
     signal sharingComplete()
 
@@ -63,6 +70,11 @@ Item {
     function showContextTypes(x, y) {
         if (sharingObj.fileCount == 0)
             return;
+        shareContainer.catModel = sharingObj.serviceTypes;
+        shareContainer.loaderState = "selectCat";
+        mdlSurface.show();
+        return;
+
         ctxServiceTypesAction.model = sharingObj.serviceTypes;
         ctxServiceTypes.myX = x;
         ctxServiceTypes.myY = y;
@@ -74,22 +86,31 @@ Item {
         if (sharingObj.fileCount == 0)
             return;
         sharingObj.serviceType = svcType;
-        ctxServicesAction.payload = sharingObj.serviceModel;
         var services = sharingObj.serviceModel.getServiceTypesList();
+        ctxServicesAction.payload = sharingObj.serviceModel;
         ctxServicesAction.model = services;
 
+        shareContainer.svcModel = services;
+        shareContainer.svcPayload = sharingObj.serviceModel;
+
         ctxServices.setPosition(x, y);
-        if ((svcType == qsTr("Email")) && (services.length == 1))
+        if ((svcType == qsTr("Email")) && (services.length == 1)) {
             selectService(services[0], sharingObj.serviceModel);
-        else
-            ctxServices.show();
+        } else {
+            shareContainer.loaderState = "selectService"
+            if (!mdlSurface.visible)
+                mdlSurface.show();
+        }
+//            ctxServices.show();
     }
 
     function selectService(svcDispName, svcModel) {
         var svcName = svcModel.getServiceNameFromDisplayName(svcDispName);
         sharingObj.serviceName = svcName;
-        loaderSource = sharingObj.getCustomUIName("ux", "blah")
-        mdlSurface.show();
+        loaderSource = sharingObj.getCustomUIName("meego", "ux");
+        shareContainer.loaderState = "customUI";
+        if (!mdlSurface.visible)
+            mdlSurface.show();
     }
 
 
@@ -127,11 +148,7 @@ Item {
             onTriggered: {
                 var svcDispName = model[index];
                 selectService(model[index], payload);
-//                var svcName = payload.getServiceNameFromDisplayName(svcDispName);
-//                sharingObj.serviceName = svcName;
-//                loaderSource = sharingObj.getCustomUIName("ux", "blah")
                 ctxServices.hide();
-//                mdlSurface.show();
             }
         }
     }
@@ -204,11 +221,34 @@ Item {
 
                 Loader {
                     id: customLoader
-                    source: dlgItem.qmlSource
+                    //source: dlgItem.qmlSource
                     anchors.centerIn: parent
                     onStatusChanged: {
-                        if (customLoader.status == Loader.Ready)
-                            console.log('Loaded ' + source);
+                        if (customLoader.status == Loader.Ready) {
+                            console.log('customLoader Loaded ' + source);
+                            console.log('customLoader width/height:', item.width, item.height);
+                        }
+                    }
+                    states: [
+                        State {
+                            name: "selectCat"
+                            PropertyChanges { target: customLoader; sourceComponent: catSelectComp }
+                        },
+                        State {
+                            name: "selectService"
+                            PropertyChanges { target: customLoader; sourceComponent: serviceSelectComp }
+                        },
+                        State {
+                            name: "customUI"
+                            PropertyChanges { target: customLoader; source: dlgItem.qmlSource }
+                        }
+                    ]
+                }
+
+                Connections {
+                    target: shareContainer
+                    onLoaderStateChanged: {
+                        customLoader.state = shareContainer.loaderState;
                     }
                 }
 
@@ -224,7 +264,7 @@ Item {
                         customLoader.source = "";
                         dlgItem.shareID = shareid;
                         if (dlgItem.shareID != -1) {
-                            console.log("Progress dialog goes here..."); //customLoader.sourceComponent = progressDlg;
+                            console.log("Progress dialog goes here...");
                             mdlSurface.hide();
                         } else {
                             mdlSurface.hide();
@@ -249,6 +289,228 @@ Item {
 
     TopItem {
         id: screenItem
+    }
+
+    Component {
+        id: catSelectComp
+        Item {
+            height: childrenRect.height + (2 * shareContainer.defaultMargin)
+            //Not sure why it's happening, but as soon as an item is selected,
+            //the catList width is increasing by 15, which causes the dialog
+            //to increase size, and everything shifts around - really ugly
+            //Assigning instead of binding works around the issue for the moment...
+
+            //width: childrenRect.width
+            Component.onCompleted: {
+                width = childrenRect.width
+            }
+
+            Text {
+                id: shareByText
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.margins: shareContainer.defaultMargin
+                font.pixelSize: theme.fontPixelSizeLarge
+                font.family: theme.fontFamily
+                color: theme.fontColorNormal
+                text: qsTr("Share by:")
+            }
+
+            ListView {
+                id: catList
+                anchors.top: shareByText.bottom
+                anchors.margins: shareContainer.defaultMargin
+
+                width: contentItem.childrenRect.width + (2 * shareContainer.defaultMargin)
+                height: 200 //contentItem.width //childrenRect.height
+                interactive: contentHeight > height
+                Component.onCompleted: {
+                    console.log("**** cL.width: ", width);
+                }
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                clip: true
+                focus: true
+                currentIndex: -1
+
+                model: shareContainer.catModel
+
+                delegate: BorderImage {
+                    id: itemSurface
+
+                    width: Math.max(childrenRect.width, 150)
+                    height: 50
+//                    anchors.left: parent.left
+//                    anchors.leftMargin: 5
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    border.left: 5; border.top: 5
+                    border.right: 5; border.bottom: 5
+
+                    source: "image://themedimage/images/media/music_row_" + (itemSurface.ListView.isCurrentItem ? "highlight_landscape" : "landscape")
+                    Component.onCompleted: {
+                        console.log("**** BI.oC, width: ", width);
+                    }
+
+                    Text {
+                        text: modelData
+                        font.pixelSize: theme.fontPixelSizeMediumLarge
+                        font.family: theme.fontFamily
+                        color: theme.fontColorNormal
+
+                        elide: Text.ElideRight
+
+                        anchors.left: parent.left
+    //                    anchors.margins: 35
+                        anchors.centerIn: parent
+                        //anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    GestureArea {
+                        anchors.fill: parent
+
+                        Tap {
+                            onFinished: {
+                                catList.currentIndex = model.index;
+                                console.log("**** BI on Selected width:", itemSurface.width);
+                                console.log("**** BI on Selected catList.width:", catList.width);
+                            }
+                        }
+                    }
+                }
+            }
+            Button {
+                anchors.top: catList.bottom
+                anchors.margins: shareContainer.defaultMargin
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("Ok")
+                active: true
+                //enabled: (catList.currentIndex != -1)
+                onClicked: {
+                    var index = catList.currentIndex;
+                    var model = shareContainer.catModel;
+                    shareContainer.sharingObj.serviceType = model[index];
+                    var services = shareContainer.sharingObj.serviceModel.getServiceTypesList();
+                    if ((model[index] == qsTr("Email")) && (services.length == 1))
+                        selectService(services[0], shareContainer.sharingObj.serviceModel);
+                    else
+                        shareContainer.showContext(model[index], 0, 0);
+                    catList.currentIndex = -1;
+                }
+            }
+        }
+    }
+
+    Component {
+        id: serviceSelectComp
+        Item {
+            height: childrenRect.height + (2 * shareContainer.defaultMargin)
+            //Not sure why it's happening, but as soon as an item is selected,
+            //the catList width is increasing by 15, which causes the dialog
+            //to increase size, and everything shifts around - really ugly
+            //Assigning instead of binding works around the issue for the moment...
+
+            //width: childrenRect.width
+            Component.onCompleted: {
+                width = childrenRect.width
+            }
+
+            Text {
+                id: svcSelectText
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.margins: shareContainer.defaultMargin
+                font.pixelSize: theme.fontPixelSizeLarge
+                font.family: theme.fontFamily
+                color: theme.fontColorNormal
+                text: qsTr("Select service:")
+            }
+
+            ListView {
+                id: svcList
+                anchors.top: svcSelectText.bottom
+                anchors.margins: shareContainer.defaultMargin
+
+                width: contentItem.childrenRect.width + (2 * shareContainer.defaultMargin)
+                height: 200 //contentItem.width //childrenRect.height
+                interactive: contentHeight > height
+                Component.onCompleted: {
+                    console.log("**** cL.width: ", width);
+                }
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                clip: true
+                focus: true
+                currentIndex: -1
+
+                model: shareContainer.svcModel
+
+                delegate: BorderImage {
+                    id: itemSurface
+
+                    width: Math.max(childrenRect.width, 150)
+                    height: 50
+//                    anchors.left: parent.left
+//                    anchors.leftMargin: 5
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    border.left: 5; border.top: 5
+                    border.right: 5; border.bottom: 5
+
+                    source: "image://themedimage/images/media/music_row_" + (itemSurface.ListView.isCurrentItem ? "highlight_landscape" : "landscape")
+                    Component.onCompleted: {
+                        console.log("**** BI.oC, width: ", width);
+                    }
+
+                    Text {
+                        text: modelData
+                        font.pixelSize: theme.fontPixelSizeMediumLarge
+                        font.family: theme.fontFamily
+                        color: theme.fontColorNormal
+
+                        elide: Text.ElideRight
+
+                        anchors.left: parent.left
+    //                    anchors.margins: 35
+                        anchors.centerIn: parent
+                        //anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    GestureArea {
+                        anchors.fill: parent
+
+                        Tap {
+                            onFinished: {
+                                svcList.currentIndex = model.index;
+                                console.log("**** BI on Selected width:", itemSurface.width);
+                                console.log("**** BI on Selected catList.width:", svcList.width);
+                            }
+                        }
+                    }
+                }
+            }
+            Button {
+                anchors.top: svcList.bottom
+                anchors.margins: shareContainer.defaultMargin
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("Ok")
+                active: true
+                //enabled: (catList.currentIndex != -1)
+                onClicked: {
+                    var index = svcList.currentIndex;
+                    var model = shareContainer.svcModel;
+                    shareContainer.selectService(model[index], shareContainer.svcPayload);
+
+                    //shareContainer.sharingObj.serviceType = model[index];
+//                    var services = shareContainer.sharingObj.serviceModel.getServiceTypesList();
+//                    if ((model[index] == qsTr("Email")) && (services.length == 1))
+//                        selectService(services[0], shareContainer.sharingObj.serviceModel);
+//                    else
+//                        shareContainer.showContext(model[index], 0, 0);
+                    svcList.currentIndex = -1;
+                }
+            }
+        }
     }
 
     Component {

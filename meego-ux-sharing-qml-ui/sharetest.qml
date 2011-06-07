@@ -10,7 +10,20 @@ Window {
         id: theme
     }
 
-    Item {
+    fullContent: true
+    fullScreen: true
+
+    bookMenuModel: ["MainPage"]
+    bookMenuPayload: [mainPage]
+
+    Component.onCompleted: {
+        switchBook(mainPage)
+    }
+
+
+    Component{
+      id: mainPage
+      AppPage {
         anchors.fill: parent
 
 
@@ -295,5 +308,6 @@ Window {
             }
         }
     }
+  }
 
 }
