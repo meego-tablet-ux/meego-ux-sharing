@@ -10,6 +10,7 @@ import Qt 4.7
 import MeeGo.Sharing 0.1
 import MeeGo.Components 0.1
 import MeeGo.Ux.Gestures 0.1
+import MeeGo.Labs.Components 0.1 as Labs
 
 Item {
 
@@ -29,6 +30,8 @@ Item {
     property variant catModel: null
     property variant svcModel: null
     property variant svcPayload: null
+    property string configAction: ""
+    property string svcDispName: ""
 
     property variant localStorage: null
 
@@ -106,9 +109,16 @@ Item {
 
     function selectService(svcDispName, svcModel) {
         var svcName = svcModel.getServiceNameFromDisplayName(svcDispName);
+        shareContainer.svcDispName = svcDispName;
         sharingObj.serviceName = svcName;
-        loaderSource = sharingObj.getCustomUIName("meego", "ux");
-        shareContainer.loaderState = "customUI";
+        if (sharingObj.getCredsState() != MeeGoUXSharingClientQmlObj.CredsStateValid) {
+            console.log("Bad Creds for", svcDispName, ":", sharingObj.getCredsState(), ", should be", MeeGoUXSharingClientQmlObj.CredsStateValid);
+            shareContainer.configAction = sharingObj.getSettingsURI("MeeGo", "UX");
+            shareContainer.loaderState = "configUI";
+        } else {
+            loaderSource = sharingObj.getCustomUIName("MeeGo", "UX");
+            shareContainer.loaderState = "customUI";
+        }
         if (!mdlSurface.visible)
             mdlSurface.show();
     }
@@ -241,7 +251,12 @@ Item {
                         State {
                             name: "customUI"
                             PropertyChanges { target: customLoader; source: dlgItem.qmlSource }
+                        },
+                        State {
+                            name: "configUI"
+                            PropertyChanges { target: customLoader; sourceComponent: svcConfigComp }
                         }
+
                     ]
                 }
 
@@ -289,6 +304,71 @@ Item {
 
     TopItem {
         id: screenItem
+    }
+
+    Component {
+        id: svcConfigComp
+        Item {
+            height: childrenRect.height + (2 * shareContainer.defaultMargin)
+            width: 300
+
+            Labs.ApplicationsModel {
+                id: appsModel
+            }
+
+            ModalSpinner {
+                id: spinnerContainer
+
+                function startSpinner() {
+                    spinnerContainer.show();
+                    spinnerTimer.restart();
+                }
+                Timer {
+                    id: spinnerTimer
+                    interval: 6000
+                    repeat: false
+                    onTriggered: {
+                        spinnerContainer.hide();
+                        mdlSurface.hide();
+                    }
+                }
+                Connections {
+                    target: qApp
+                    onWindowListUpdated: {
+                        spinnerContainer.hide();
+                        mdlSurface.hide();
+                    }
+                }
+            }
+
+            Text {
+                id: needConfigText
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.margins: shareContainer.defaultMargin
+                font.pixelSize: theme.fontPixelSizeMediumLarge
+                font.family: theme.fontFamily
+                color: theme.fontColorNormal
+                text: qsTr("An error occurred when logging in to %1").arg(shareContainer.svcDispName)
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            }
+
+            Button {
+                anchors.top: needConfigText.bottom
+                anchors.margins: shareContainer.defaultMargin
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("Go to settings")
+                active: true
+                onClicked: {
+                    //Launch URI from shareContainer.configAction
+                    console.log("Launching settings for ", shareContainer.svcDispName);
+                    console.log("cmdline: ", shareContainer.configAction);
+                    spinnerContainer.startSpinner();
+                    appsModel.launch(shareContainer.configAction)
+                }
+            }
+        }
     }
 
     Component {
@@ -385,7 +465,7 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Ok")
                 active: true
-                //enabled: (catList.currentIndex != -1)
+                enabled: (catList.currentIndex != -1)
                 onClicked: {
                     var index = catList.currentIndex;
                     var model = shareContainer.catModel;
@@ -495,7 +575,7 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Ok")
                 active: true
-                //enabled: (catList.currentIndex != -1)
+                enabled: (svcList.currentIndex != -1)
                 onClicked: {
                     var index = svcList.currentIndex;
                     var model = shareContainer.svcModel;

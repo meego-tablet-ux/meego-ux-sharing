@@ -116,6 +116,24 @@ QStringList MeeGoUXSharingClientQmlObj::getFilesToShare()
     return mItems.keys();
 }
 
+uint MeeGoUXSharingClientQmlObj::getCredsState()
+{
+    if (!mService) {
+        return CredsStateUnknown;
+    } else {
+        return mService->getCredsState();
+    }
+}
+
+QString MeeGoUXSharingClientQmlObj::getSettingsURI(QString platform, QString product)
+{
+    if (!mService) {
+        return "";
+    } else {
+        return mService->getSettingsURI(platform, product);
+    }
+}
+
 
 void MeeGoUXSharingClientQmlObj::addFile(QString file)
 {

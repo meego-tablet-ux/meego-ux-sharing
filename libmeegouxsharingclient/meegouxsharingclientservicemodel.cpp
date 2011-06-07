@@ -97,7 +97,7 @@ void MeeGoUXSharingClientServiceModel::filter()   //Private
                                                                                  mCore->getConnection(),
                                                                                  this);
         if (clientService->getServiceType() == mServiceType
-            && clientService->getCredsState() == CredsStateValid) {
+            /*&& clientService->getCredsState() == CredsStateValid*/) {
             mServiceList.append(service);
             connect(clientService,
                     SIGNAL(ServiceChanged(MeeGoUXSharingClientService*)),

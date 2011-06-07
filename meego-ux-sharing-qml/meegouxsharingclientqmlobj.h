@@ -36,6 +36,7 @@ class MeeGoUXSharingClientQmlObj : public QObject
 
     //TODO - figure out how to expose this type to QML from the meegouxsharingcommon.h file
     Q_ENUMS(ShareType)
+    Q_ENUMS(CredsState)
 
 
 public:
@@ -47,6 +48,12 @@ public:
         ShareTypeAudio = 2,
         ShareTypeText  = 3,
         ShareTypeVCard = 4,
+    };
+
+    enum CredsState {
+        CredsStateValid = 0,
+        CredsStateInvalid = 1,
+        CredsStateUnknown = 2,
     };
 
     //First, you set the share type
@@ -78,6 +85,11 @@ public:
 
     //This is how you get a list of which files are currently selected to share
     Q_INVOKABLE QStringList getFilesToShare();
+
+    //Get the credentials state of the service
+    Q_INVOKABLE uint getCredsState();
+
+    Q_INVOKABLE QString getSettingsURI(QString platform, QString product);
 
     //Now you can manipulate the share items - note that the files will actually be added
     //by the app that is calling the sharing UI widget, so those should be pre-populated.
