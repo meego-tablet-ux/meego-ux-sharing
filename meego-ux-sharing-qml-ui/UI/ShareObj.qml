@@ -38,6 +38,9 @@ Item {
     property string loaderSource: ""
     property string loaderState: ""
     property int defaultMargin: 15
+    property int latestShareProgress: 0
+    property bool networkError: false
+    property bool credsError: false
 
 
     signal sharingComplete()
@@ -123,6 +126,44 @@ Item {
             mdlSurface.show();
     }
 
+    function addShareID(shareID) {
+        var theFiles;
+        var file;
+        for (file in itemsToShare) {
+            //theFiles.append({ "fileName": file, "progress": 0 });
+        }
+
+        progressModel.append({ "shareID": shareID, "files": theFiles })
+
+    }
+
+    ListModel {
+        id: progressModel
+    }
+
+    Theme { id: theme }
+
+    Connections {
+        target: sharingObj
+        onShareProgress: {
+            //For now, only worry about our most recent share op
+            console.log("Got share progress, service: " + serviceName + ", opid: " + opid + ", progress: " + progress + ", msg: " + message);
+            //for (x in progressModel.count)
+//            if (opid == dlgItem.shareID) {
+                if (progress == -1) {
+                    //Error dlg!
+                    //shareError = message;
+                    customLoader.state = "errorUI"
+                    customLoader.shareErrorMsg = message;
+                    //customLoader.sourceComponent = errorDlg;
+                    shareContainer.latestShareProgress = 0;
+                } else {
+                    shareContainer.latestShareProgress = progress;
+                }
+  //          }
+        }
+    }
+
 
     Translator {
         catalog: "meego-ux-sharing-qml-ui"
@@ -181,33 +222,16 @@ Item {
 
             property QtObject sharingObj: shareContainer.sharingObj
             property string qmlSource: shareContainer.loaderSource
-            property int shareID: -1;
-            property int shareProgressL: 0;
-            property string shareError: "";
-
-            Connections {
-                target: sharingObj
-                onShareProgress: {
-                    //For now, only worry about our most recent share op
-                    console.log("Got share progress, service: " + serviceName + ", opid: " + opid + ", progress: " + progress + ", msg: " + message + ", curShareID: " + dlgItem.shareID);
-                    if (opid == dlgItem.shareID) {
-                        if (progress == -1) {
-                            //Error dlg!
-                            shareError = message;
-                            customLoader.sourceComponent = errorDlg;
-                        } else {
-                            shareProgressL = progress;
-                        }
-                    }
-                }
-            }
+            //property int shareID: -1;
+            //property int shareProgressL: 0;
+            //property string shareError: "";
 
             Connections {
                 target: mdlSurface
                 onClosed: {
-                    dlgItem.shareID = -1;
-                    dlgItem.shareProgressL = 0;
-                    dlgItem.shareError = "";
+                    //dlgItem.shareID = -1;
+                    //dlgItem.shareProgressL = 0;
+                    //dlgItem.shareError = "";
                     shareContainer.sharingComplete();
                 }
             }
@@ -215,7 +239,7 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    console.log("BI filler MouseArea clicked!");
+                    //console.log("BI filler MouseArea clicked!");
                 }
             }
 
@@ -233,6 +257,9 @@ Item {
                     id: customLoader
                     //source: dlgItem.qmlSource
                     anchors.centerIn: parent
+
+                    property string shareErrorMsg: ""
+
                     onStatusChanged: {
                         if (customLoader.status == Loader.Ready) {
                             console.log('customLoader Loaded ' + source);
@@ -255,6 +282,14 @@ Item {
                         State {
                             name: "configUI"
                             PropertyChanges { target: customLoader; sourceComponent: svcConfigComp }
+                        },
+                        State {
+                            name: "progressUI"
+                            PropertyChanges { target: customLoader; sourceComponent: progressDlg }
+                        },
+                        State {
+                            name: "errorUI"
+                            PropertyChanges { target: customLoader; sourceComponent: errorDlg }
                         }
 
                     ]
@@ -276,11 +311,13 @@ Item {
                     }
                     onShared: {
                         console.log("Shared, with share ID " + shareid);
-                        customLoader.source = "";
-                        dlgItem.shareID = shareid;
-                        if (dlgItem.shareID != -1) {
-                            console.log("Progress dialog goes here...");
-                            mdlSurface.hide();
+                        //customLoader.source = "";
+                        //dlgItem.shareID = shareid;
+                        if (shareid != -1) {
+                            //console.log("Progress dialog goes here...");
+                            shareContainer.addShareID(shareid);
+                            customLoader.state = "progressUI";
+                            //mdlSurface.hide();
                         } else {
                             mdlSurface.hide();
                             sharingObj.clearFiles();
@@ -289,11 +326,13 @@ Item {
                     }
                     onShareError: {
                         console.log("Share error occured: " + errMsg);
-                        customLoader.source = "";
-                        shareError = errMsg;
+                        //customLoader.source = "";
+                        customLoader.shareErrorMsg = errMsg;
+                        //shareError = errMsg;
 //                        customLoader.sourceComponent = errorDlg;
+                        customLoader.state = "errorUI";
                         sharingObj.clearFiles();
-                        mdlSurface.hide();
+                        //mdlSurface.hide();
 			shareContainer.sharingComplete();
                     }
                 }
@@ -600,16 +639,33 @@ Item {
             height: childrenRect.height + 20
             width: childrenRect.width + 20
             Text {
-                id: txtError
+                id: txtTitle
                 anchors.top: parent.top
-                anchors.topMargin: 10
-                text: qsTr("An error occurred while sharing: %1").arg(dlgItem.shareError);
                 anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.margins: shareContainer.defaultMargin
+                //: %1 is service name
+                text: ( shareContainer.networkError ? qsTr("Network problem") : qsTr("%1 problem").arg(shareContainer.svcDispName) )
+            }
+            Text {
+                id: txtError
+                anchors.top: txtTitle.bottom
+                anchors.topMargin: shareContainer.defaultMargin
+                //: %1 is the error message from the sharing framework
+                text: qsTr("An error occurred while sharing: %1").arg(customLoader.shareErrorMsg);
+                anchors.left: parent.left
+                anchors.leftMargin: shareContainer.defaultMargin
+            }
+            Text {
+                id: txtError2
+                anchors.top: txtError.bottom
+                anchors.left: parent.left
+                anchors.margins: shareContainer.defaultMargin
+                //: %1 is the service name.
+                text: ( shareContainer.networkError ? qsTr("Sorry, there's a problem with the network. Please try again when you have an internet connection.") : (shareContainer.credsError ? qsTr("Sorry, there's a problem with %1 and we need you to log in again").arg(shareContainer.svcDispName) : qsTr("Sorry, there's a problem with %1 and we can't upload your file.").arg(shareContainer.svcDispName) ) )
             }
             Button {
                 text: qsTr("Ok")
-                anchors.top: txtError.bottom
+                anchors.top: txtError2.bottom
                 anchors.topMargin: 10
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
@@ -627,21 +683,49 @@ Item {
         id: progressDlg
         Item {
             id: progressItem
-            height: childrenRect.height + 20
-            width: childrenRect.width + 20
+            height: childrenRect.height + (2 * shareContainer.defaultMargin)
+            width: childrenRect.width + (2 * shareContainer.defaultMargin)
 
             Text {
-                id: txtProgress
+                id: txtLabel
+                anchors.margins: shareContainer.defaultMargin
                 anchors.top: parent.top
-                anchors.topMargin: 10
-                text: qsTr("Upload progress: %1%%").arg(shareProgressL);
                 anchors.left: parent.left
-                anchors.leftMargin: 10
+                //: %1 is the service name
+                text: qsTr("Uploading to %1").arg(shareContainer.svcDispName)
+                font.pixelSize: theme.fontSizeMediumLarge
+            }
+
+            Text {
+                id: txtComplete
+                visible: false
+                text: qsTr("Upload complete")
+            }
+
+            ProgressBar {
+                id: barProgress
+                percentage: shareContainer.latestShareProgress
+                anchors.margins: shareContainer.defaultMargin
+                anchors.top:  txtLabel.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+//            Text {
+//                id: txtProgress
+//                anchors.top: parent.top
+//                anchors.topMargin: shareContainer.defaultMargin
+//                text: qsTr("Upload progress: %1%").arg(shareContainer.svcDispName);
+//                anchors.left: parent.left
+//                anchors.leftMargin: 10
+//            }
+            Button {
+                text: qsTr("Cancel")
+                visible: false
             }
             Button {
-                text: qsTr("Ok")
-                anchors.top: txtProgress.bottom
-                anchors.topMargin: 10
+                text: (shareContainer.latestShareProgress == 100) ? qsTr("Return") : qsTr("Hide")
+                anchors.top: barProgress.bottom
+                anchors.margins: shareContainer.defaultMargin
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: {
                     mdlSurface.hide();
