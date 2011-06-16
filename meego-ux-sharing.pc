@@ -6,5 +6,5 @@ includedir=${prefix}/include
 
 Name: meego-ux-sharing
 Description: Content sharing framework for MeeGo
-Version: 0.1.8
+Version: 0.1.9
 Cflags: -I${includedir}/meego-ux-sharing -DMSD_PLUGIN_PATH=\\\"/usr/lib/meego-ux-sharing/plugins\\\"
