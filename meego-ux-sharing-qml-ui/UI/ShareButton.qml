@@ -41,6 +41,7 @@ ShareObj {
             if (restoreRequired) {
                 var val;
                 val = Math.floor(value(snrPrefix + "_shareAll", 0));
+                remove(snrPrefix + "_shareAll");
                 if (val)
                     shareAll = true;
                 else

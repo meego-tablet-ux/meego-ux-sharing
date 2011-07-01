@@ -183,26 +183,32 @@ Item {
             console.log("mySnR: ", restoreRequired)
             if (restoreRequired) {
                 var files = value(snrPrefix + "_filesToShare", null);
+                remove(snrPrefix + "_filesToShare");
                 console.log("filesToShare:" + files);
                 var x;
                 sharingObj.addFiles(files);
                 for (x in files) {
                     sharingObj.setHashVariantForFile(files[x], value(snrPrefix + "_fileParams_" + files[x], null));
+                    remove(snrPrefix + "_fileParams_" + files[x]);
                 }
 
                 var val;
                 val = mySnR.value(snrPrefix + "_shareType", MeeGoUXSharingClientQmlObj.ShareTypeImage)
+                remove(snrPrefix + "_shareType");
                 //Loosely-typed javascript will convert our valid val to a -1 number - force it to be a number:
                 sharingObj.shareType = Math.floor(val)
 
                 //Only set these properties if we have something to set
                 val = mySnR.value(snrPrefix + "_customShareType", "")
+                remove(snrPrefix + "_customShareType");
                 if (val != "")
                     sharingObj.customShareType = val;
                 val = mySnR.value(snrPrefix + "_serviceType", "")
+                remove(snrPrefix + "_serviceType");
                 if (val != "")
                     sharingObj.serviceType = val
                 val = mySnR.value(snrPrefix + "_serviceName", "")
+                remove(snrPrefix + "_serviceName")
                 if (val != "")
                     sharingObj.serviceName = val
 
@@ -210,16 +216,26 @@ Item {
                 //This makes sure that any state restores in any custom QML already has all the vals in sharingObj
                 //that it had when it saved state
                 loaderSource = value(snrPrefix + "_loaderSource", "")
+                remove(snrPrefix + "_loaderSource");
                 loaderState = value(snrPrefix + "_loaderState", "")
+                remove(snrPrefix + "_loaderState");
 
                 //Do some trickiness to force val to be a bool
                 val = (Math.floor(value(snrPrefix + "_mdlSurfaceShow", 0)) == 1)
+                remove(snrPrefix + "_mdlSurfaceShow");
                 if (val) {
                     mdlSurface.show();
                 } else {
                     mdlSurface.hide();
                 }
-                invalidate();
+                remove(snrPrefix + "_catModel");
+                remove(snrPrefix + "_svcModel");
+                remove(snrPrefix + "_configAction");
+                remove(snrPrefix + "_svcDispName");
+                remove(snrPrefix + "_localStorage");
+                remove(snrPrefix + "_networkError");
+                remove(snrPrefix + "_credError");
+//                invalidate();
             }
             console.log("filesToShare", sharingObj.filesToShare);
         }
