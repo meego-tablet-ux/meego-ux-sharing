@@ -31,6 +31,23 @@ ShareObj {
         id: topItem
     }
 
+    SaveRestoreState {
+        id: mySnRBtn
+        onSaveRequired: {
+            setValue("shareAll", (shareAll ? 1 : 0));
+        }
+        Component.onCompleted: {
+            if (restoreRequired) {
+                var val;
+                val = Math.floor(value("shareAll", 0));
+                if (val)
+                    shareAll = true;
+                else
+                    shareAll = false;
+            }
+        }
+    }
+
     Button {
         id: shareBtn
         width: 120  //TODO - theme/auto calc?

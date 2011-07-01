@@ -25,22 +25,23 @@ Item {
     property alias serviceTypes: sharingObj.serviceTypes
     property QtObject sharingObj: MeeGoUXSharingClientQmlObj {
         id: sharingObj
-        shareType: MeeGoUXSharingClientQmlObj.ShareTypeImage;
+        shareType: MeeGoUXSharingClientQmlObj.ShareTypeImage
     }
-    property variant catModel: null
-    property variant svcModel: null
-    property variant svcPayload: null
-    property string configAction: ""
-    property string svcDispName: ""
+    property variant catModel: mySnR.value("catModel", null)
+    property variant svcModel: mySnR.value("svcModel", null)
 
-    property variant localStorage: null
+    property string configAction: mySnR.value("configAction", "")
+    property string svcDispName: mySnR.value("svcDispName", "")
+
+    property variant localStorage: mySnR.value("localStorage", null)
 
     property string loaderSource: ""
     property string loaderState: ""
+
     property int defaultMargin: 15
     property int latestShareProgress: 0
-    property bool networkError: false
-    property bool credsError: false
+    property bool networkError: mySnR.value("networkError", false)
+    property bool credsError: mySnR.value("credsError", false)
 
 
     signal sharingComplete()
@@ -97,7 +98,7 @@ Item {
         ctxServicesAction.model = services;
 
         shareContainer.svcModel = services;
-        shareContainer.svcPayload = sharingObj.serviceModel;
+        //shareContainer.svcPayload = sharingObj.serviceModel;
 
         ctxServices.setPosition(x, y);
         if ((svcType == qsTr("Email")) && (services.length == 1)) {
@@ -135,6 +136,92 @@ Item {
 
         progressModel.append({ "shareID": shareID, "files": theFiles })
 
+    }
+
+    SaveRestoreState {
+        id: mySnR
+        onSaveRequired: {
+
+            console.log("Got saveRequired, saving!");
+
+            //sharingObj properties:
+            console.log("saving sO.shareType:", sharingObj.shareType)
+            setValue("shareType", sharingObj.shareType);
+            setValue("customShareType", sharingObj.customShareType);
+            setValue("serviceType", sharingObj.serviceType);
+            setValue("serviceName", sharingObj.serviceName);
+            var x;
+            var files = sharingObj.filesToShare;
+            setValue("filesToShare", sharingObj.filesToShare);
+
+            for (x in files) {
+                console.log("Setting value for file" + files[x]);
+                setValue("fileParams_" + files[x], sharingObj.getHashVariantForFile(files[x]));
+            }
+
+            //ShareObj properties/state values
+            setValue("loaderSource", loaderSource);
+            setValue("loaderState", loaderState);
+            console.log("saving catModel:", catModel);
+            setValue("catModel", catModel);
+            setValue("svcModel", svcModel);
+            setValue("configAction", configAction);
+            setValue("svcDispName", svcDispName);
+            setValue("localStorage", localStorage);
+            setValue("mdlSurfaceShow", (mdlSurface.visible ? 1 : 0));
+            setValue("networkError", networkError);
+            setValue("credsError", credsError);
+
+            console.log("filesToShare", sharingObj.filesToShare)
+            console.log("Calling sync...");
+            mySnR.sync();
+        }
+        Component.onCompleted: {
+
+            console.log("mySnR: ", restoreRequired)
+            if (restoreRequired) {
+                var files = value("filesToShare", null);
+                console.log("filesToShare:" + files);
+                var x;
+                sharingObj.addFiles(files);
+                for (x in files) {
+                    sharingObj.setHashVariantForFile(files[x], value("fileParams_" + files[x], null));
+                }
+
+                var val;
+                val = mySnR.value("shareType", MeeGoUXSharingClientQmlObj.ShareTypeImage)
+                //Loosely-typed javascript will convert our valid val to a -1 number - force it to be a number:
+                sharingObj.shareType = Math.floor(val)
+
+                //Only set these properties if we have something to set
+                val = mySnR.value("customShareType", "")
+                if (val != "")
+                    sharingObj.customShareType = val;
+                val = mySnR.value("serviceType", "")
+                if (val != "")
+                    sharingObj.serviceType = val
+                val = mySnR.value("serviceName", "")
+                if (val != "")
+                    sharingObj.serviceName = val
+
+                //Only set up loaderSource and loaderState *after* we've ensured that all files/hashes are loaded.
+                //This makes sure that any state restores in any custom QML already has all the vals in sharingObj
+                //that it had when it saved state
+                loaderSource = value("loaderSource", "")
+                loaderState = value("loaderState", "")
+
+                console.log("restoring catModel:", value("catModel"));
+                console.log("mdlSurfaceShow:", value("mdlSurfaceShow"));
+                //Do some trickiness to force val to be a bool
+                val = (Math.floor(value("mdlSurfaceShow", 0)) == 1)
+                if (val) {
+                    mdlSurface.show();
+                } else {
+                    mdlSurface.hide();
+                }
+            }
+            console.log("filesToShare", sharingObj.filesToShare);
+        }
     }
 
     ListModel {
@@ -509,6 +596,9 @@ Item {
                     var index = catList.currentIndex;
                     var model = shareContainer.catModel;
                     shareContainer.sharingObj.serviceType = model[index];
+                    console.log("serviceType:", model[index]);
+                    console.log("sO.serviceType:", shareContainer.sharingObj.serviceType);
+                    console.log("sO.serviceModel:", shareContainer.sharingObj.serviceModel);
                     var services = shareContainer.sharingObj.serviceModel.getServiceTypesList();
                     if ((model[index] == qsTr("Email")) && (services.length == 1))
                         selectService(services[0], shareContainer.sharingObj.serviceModel);
@@ -618,7 +708,7 @@ Item {
                 onClicked: {
                     var index = svcList.currentIndex;
                     var model = shareContainer.svcModel;
-                    shareContainer.selectService(model[index], shareContainer.svcPayload);
+                    shareContainer.selectService(model[index], sharingObj.serviceModel);
 
                     //shareContainer.sharingObj.serviceType = model[index];
 //                    var services = shareContainer.sharingObj.serviceModel.getServiceTypesList();

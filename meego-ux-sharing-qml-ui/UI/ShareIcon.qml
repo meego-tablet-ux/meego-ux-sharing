@@ -33,6 +33,23 @@ ShareObj {
         id: topItem
     }
 
+    SaveRestoreState {
+        id: mySnRIcn
+        onSaveRequired: {
+            setValue("shareAll", (shareAll ? 1 : 0));
+        }
+        Component.onCompleted: {
+            if (restoreRequired) {
+                var val;
+                val = Math.floor(value("shareAll", 0));
+                if (val)
+                    shareAll = true;
+                else
+                    shareAll = false;
+            }
+        }
+    }
+
     IconButton {
         id: shareImg
         icon: "image://themedimage/images/media/icn_share_up"

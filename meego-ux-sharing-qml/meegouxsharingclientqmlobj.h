@@ -24,7 +24,7 @@ class MeeGoUXSharingClientServiceModel;
 class MeeGoUXSharingClientQmlObj : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(ShareType shareType READ getShareType WRITE setShareType)
+    Q_PROPERTY(ShareType shareType READ getShareType WRITE setShareType NOTIFY shareTypeChanged)
     Q_PROPERTY(QString shareTypeName READ getShareTypeName NOTIFY ShareTypeNameChanged)
     Q_PROPERTY(QString customShareType READ getCustomShareType WRITE setCustomShareType)
     Q_PROPERTY(QStringList serviceTypes READ getServiceTypes NOTIFY ServiceTypesChanged)
@@ -100,6 +100,9 @@ public:
     Q_INVOKABLE void addFiles(QStringList files);
     Q_INVOKABLE void removeFile(QString file);
     Q_INVOKABLE void removeFiles(QStringList files);
+    Q_INVOKABLE QVariant getHashVariantForFile(QString file);
+    Q_INVOKABLE void setHashVariantForFile(QString file, QVariant hash);
+    Q_INVOKABLE QStringList getHashKeysForFile(QString file);
     Q_INVOKABLE void addHashEntryToFile(QString file, QString paramName, QString paramVal);
     Q_INVOKABLE void modifyHashEntryForFile(QString file, QString paramName, QString newParamVal);
     Q_INVOKABLE QString getHashEntryForFile(QString file, QString paramName, QString defaultVal = "");
@@ -109,6 +112,7 @@ public:
     Q_INVOKABLE uint getFileCount() { return mItems.count(); }
 
 signals:
+    void shareTypeChanged();
     void ShareTypeNameChanged();
     void ServiceTypeChanged();
     void ServiceNameChanged();

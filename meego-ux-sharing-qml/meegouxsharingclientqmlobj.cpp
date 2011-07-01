@@ -30,6 +30,7 @@ void MeeGoUXSharingClientQmlObj::setShareType(MeeGoUXSharingClientQmlObj::ShareT
 {
     mShareType = type;
     mCustomShareType = "";
+    emit this->shareTypeChanged();
     emit this->ShareTypeNameChanged();
     emit this->ServiceTypesChanged();
 }
@@ -163,6 +164,44 @@ void MeeGoUXSharingClientQmlObj::removeFiles(QStringList files)
     foreach (QString file, files) {
         removeFile(file);
     }
+}
+
+QVariant MeeGoUXSharingClientQmlObj::getHashVariantForFile(QString file)
+{
+    if (!mItems.contains(file))
+        return QVariant();
+
+    //Have to convert to a <QString, QVariant>-based hash for QVariant to be happy... :(
+    QHash<QString, QVariant> theHash;
+    ShareParams::const_iterator i = mItems[file].params.constBegin();
+    while (i != mItems[file].params.constEnd()) {
+        theHash.insert(i.key(), i.value());
+        ++i;
+    }
+
+    return QVariant(theHash);
+}
+
+void MeeGoUXSharingClientQmlObj::setHashVariantForFile(QString file, QVariant hash)
+{
+    if (!mItems.contains(file))
+        return;
+
+    //Convert back from a <QString, QVariant>-based hash to our <QString, QString>-based hash
+    QHash<QString, QVariant> theHash = hash.toHash();
+    QHash<QString, QVariant>::const_iterator i = theHash.constBegin();
+    while (i != theHash.constEnd()) {
+        addHashEntryToFile(file, i.key(), i.value().toString());
+        ++i;
+    }
+}
+
+QStringList MeeGoUXSharingClientQmlObj::getHashKeysForFile(QString file)
+{
+    if (!mItems.contains(file))
+        return QStringList();
+
+    return mItems[file].params.keys();
 }
 
 void MeeGoUXSharingClientQmlObj::addHashEntryToFile(QString file, QString paramName, QString paramVal)
