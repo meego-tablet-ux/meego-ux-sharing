@@ -23,25 +23,27 @@ Item {
     property alias shareType: sharingObj.shareType
     property alias itemsToShare: sharingObj.filesToShare
     property alias serviceTypes: sharingObj.serviceTypes
+    property string snrPrefix: "ShareObj"
+
     property QtObject sharingObj: MeeGoUXSharingClientQmlObj {
         id: sharingObj
         shareType: MeeGoUXSharingClientQmlObj.ShareTypeImage
     }
-    property variant catModel: mySnR.value("catModel", null)
-    property variant svcModel: mySnR.value("svcModel", null)
+    property variant catModel: mySnR.value(snrPrefix + "_catModel", null)
+    property variant svcModel: mySnR.value(snrPrefix + "_svcModel", null)
 
-    property string configAction: mySnR.value("configAction", "")
-    property string svcDispName: mySnR.value("svcDispName", "")
+    property string configAction: mySnR.value(snrPrefix + "_configAction", "")
+    property string svcDispName: mySnR.value(snrPrefix + "_svcDispName", "")
 
-    property variant localStorage: mySnR.value("localStorage", null)
+    property variant localStorage: mySnR.value(snrPrefix + "_localStorage", null)
 
     property string loaderSource: ""
     property string loaderState: ""
 
     property int defaultMargin: 15
     property int latestShareProgress: 0
-    property bool networkError: mySnR.value("networkError", false)
-    property bool credsError: mySnR.value("credsError", false)
+    property bool networkError: mySnR.value(snrPrefix + "_networkError", false)
+    property bool credsError: mySnR.value(snrPrefix + "_credsError", false)
 
 
     signal sharingComplete()
@@ -146,31 +148,31 @@ Item {
 
             //sharingObj properties:
             console.log("saving sO.shareType:", sharingObj.shareType)
-            setValue("shareType", sharingObj.shareType);
-            setValue("customShareType", sharingObj.customShareType);
-            setValue("serviceType", sharingObj.serviceType);
-            setValue("serviceName", sharingObj.serviceName);
+            setValue(snrPrefix + "_shareType", sharingObj.shareType);
+            setValue(snrPrefix + "_customShareType", sharingObj.customShareType);
+            setValue(snrPrefix + "_serviceType", sharingObj.serviceType);
+            setValue(snrPrefix + "_serviceName", sharingObj.serviceName);
             var x;
             var files = sharingObj.filesToShare;
-            setValue("filesToShare", sharingObj.filesToShare);
+            setValue(snrPrefix + "_filesToShare", sharingObj.filesToShare);
 
             for (x in files) {
                 console.log("Setting value for file" + files[x]);
-                setValue("fileParams_" + files[x], sharingObj.getHashVariantForFile(files[x]));
+                setValue(snrPrefix + "_fileParams_" + files[x], sharingObj.getHashVariantForFile(files[x]));
             }
 
             //ShareObj properties/state values
-            setValue("loaderSource", loaderSource);
-            setValue("loaderState", loaderState);
+            setValue(snrPrefix + "_loaderSource", loaderSource);
+            setValue(snrPrefix + "_loaderState", loaderState);
             console.log("saving catModel:", catModel);
-            setValue("catModel", catModel);
-            setValue("svcModel", svcModel);
-            setValue("configAction", configAction);
-            setValue("svcDispName", svcDispName);
-            setValue("localStorage", localStorage);
-            setValue("mdlSurfaceShow", (mdlSurface.visible ? 1 : 0));
-            setValue("networkError", networkError);
-            setValue("credsError", credsError);
+            setValue(snrPrefix + "_catModel", catModel);
+            setValue(snrPrefix + "_svcModel", svcModel);
+            setValue(snrPrefix + "_configAction", configAction);
+            setValue(snrPrefix + "_svcDispName", svcDispName);
+            setValue(snrPrefix + "_localStorage", localStorage);
+            setValue(snrPrefix + "_mdlSurfaceShow", (mdlSurface.visible ? 1 : 0));
+            setValue(snrPrefix + "_networkError", networkError);
+            setValue(snrPrefix + "_credsError", credsError);
 
             console.log("filesToShare", sharingObj.filesToShare)
             console.log("Calling sync...");
@@ -180,45 +182,44 @@ Item {
 
             console.log("mySnR: ", restoreRequired)
             if (restoreRequired) {
-                var files = value("filesToShare", null);
+                var files = value(snrPrefix + "_filesToShare", null);
                 console.log("filesToShare:" + files);
                 var x;
                 sharingObj.addFiles(files);
                 for (x in files) {
-                    sharingObj.setHashVariantForFile(files[x], value("fileParams_" + files[x], null));
+                    sharingObj.setHashVariantForFile(files[x], value(snrPrefix + "_fileParams_" + files[x], null));
                 }
 
                 var val;
-                val = mySnR.value("shareType", MeeGoUXSharingClientQmlObj.ShareTypeImage)
+                val = mySnR.value(snrPrefix + "_shareType", MeeGoUXSharingClientQmlObj.ShareTypeImage)
                 //Loosely-typed javascript will convert our valid val to a -1 number - force it to be a number:
                 sharingObj.shareType = Math.floor(val)
 
                 //Only set these properties if we have something to set
-                val = mySnR.value("customShareType", "")
+                val = mySnR.value(snrPrefix + "_customShareType", "")
                 if (val != "")
                     sharingObj.customShareType = val;
-                val = mySnR.value("serviceType", "")
+                val = mySnR.value(snrPrefix + "_serviceType", "")
                 if (val != "")
                     sharingObj.serviceType = val
-                val = mySnR.value("serviceName", "")
+                val = mySnR.value(snrPrefix + "_serviceName", "")
                 if (val != "")
                     sharingObj.serviceName = val
 
                 //Only set up loaderSource and loaderState *after* we've ensured that all files/hashes are loaded.
                 //This makes sure that any state restores in any custom QML already has all the vals in sharingObj
                 //that it had when it saved state
-                loaderSource = value("loaderSource", "")
-                loaderState = value("loaderState", "")
+                loaderSource = value(snrPrefix + "_loaderSource", "")
+                loaderState = value(snrPrefix + "_loaderState", "")
 
-                console.log("restoring catModel:", value("catModel"));
-                console.log("mdlSurfaceShow:", value("mdlSurfaceShow"));
                 //Do some trickiness to force val to be a bool
-                val = (Math.floor(value("mdlSurfaceShow", 0)) == 1)
+                val = (Math.floor(value(snrPrefix + "_mdlSurfaceShow", 0)) == 1)
                 if (val) {
                     mdlSurface.show();
                 } else {
                     mdlSurface.hide();
                 }
+                invalidate();
             }
             console.log("filesToShare", sharingObj.filesToShare);
         }

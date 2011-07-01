@@ -16,6 +16,8 @@ ShareObj {
 
     id: shareContainer
 
+    snrPrefix: "ShareIcon"
+
     signal shareAllClicked();
 
     property bool shareAll: false
@@ -36,12 +38,12 @@ ShareObj {
     SaveRestoreState {
         id: mySnRIcn
         onSaveRequired: {
-            setValue("shareAll", (shareAll ? 1 : 0));
+            setValue(snrPrefix + "_shareAll", (shareAll ? 1 : 0));
         }
         Component.onCompleted: {
             if (restoreRequired) {
                 var val;
-                val = Math.floor(value("shareAll", 0));
+                val = Math.floor(value(snrPrefix + "_shareAll", 0));
                 if (val)
                     shareAll = true;
                 else

@@ -19,6 +19,7 @@ ShareObj {
     property bool shareAll: false
     property int mouseX
     property int mouseY
+    snrPrefix: "ShareButton"
 
     function doShareAll() {
         if (shareCount == 0)
@@ -34,12 +35,12 @@ ShareObj {
     SaveRestoreState {
         id: mySnRBtn
         onSaveRequired: {
-            setValue("shareAll", (shareAll ? 1 : 0));
+            setValue(snrPrefix + "_shareAll", (shareAll ? 1 : 0));
         }
         Component.onCompleted: {
             if (restoreRequired) {
                 var val;
-                val = Math.floor(value("shareAll", 0));
+                val = Math.floor(value(snrPrefix + "_shareAll", 0));
                 if (val)
                     shareAll = true;
                 else
