@@ -24,8 +24,7 @@ ShareObj {
     function doShareAll() {
         if (shareCount == 0)
             return;
-        var pos = mapToItem(topItem.topItem, mouseX, mouseY); //shareBtn.x+shareBtn.width, shareBtn.y);
-        showContextTypes(pos.x, pos.y);
+        showContextTypes(0, 0);
     }
 
     TopItem {
@@ -65,11 +64,8 @@ ShareObj {
 
         onClicked: {
             if (shareAll && shareCount == 0) {
-                mouseX = mouse.x;
-                mouseY = mouse.y;
                 shareContainer.shareAllClicked();
             } else {
-                //var pos = mapToItem(topItem.topItem, mouse.x, mouse.y); //shareBtn.x+shareBtn.width, shareBtn.y);
                 parent.showContextTypes(0, 0);
             }
         }

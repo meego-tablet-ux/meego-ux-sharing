@@ -27,8 +27,7 @@ ShareObj {
     function doShareAll() {
         if (shareCount == 0)
             return;
-        var pos = mapToItem(topItem.topItem, mouseX /*shareImg.x+shareImg.width*/, mouseY /*shareImg.y*/);
-        showContextTypes(pos.x, pos.y);
+        showContextTypes(0, 0);
     }
 
     TopItem {
@@ -69,12 +68,9 @@ ShareObj {
 
         onClicked: {
             if (shareAll && shareCount == 0) {
-                shareContainer.mouseX = mouse.x;
-                shareContainer.mouseY = mouse.y;
                 shareContainer.shareAllClicked();
             } else {
-                var pos = mapToItem(topItem.topItem, mouse.x /*shareImg.x+shareImg.width*/, mouse.y /*shareImg.y*/);
-                parent.showContextTypes(pos.x, pos.y);
+                parent.showContextTypes(0, 0);
             }
         }
     }
