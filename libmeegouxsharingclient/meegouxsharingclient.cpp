@@ -43,6 +43,10 @@ MeeGoUXSharingClient::MeeGoUXSharingClient(const QDBusConnection &connection,
         mCore(new MeeGoUXSharingClientCore(connection, this))
 {
     registerMeeGoUXSharingDBUSDataTypes();
+    connect(mCore,
+            SIGNAL(ShareProgress(QString,int,int,QString)),
+            this,
+            SLOT(onShareProgress(QString,int,int,QString)));
 }
 
 QStringList MeeGoUXSharingClient::getServiceTypes(MeeGoUXSharingType type)

@@ -41,6 +41,11 @@ MeeGoUXSharingClientCore::MeeGoUXSharingClientCore(const QDBusConnection &connec
             this,
             SIGNAL(ServiceRemoved(QString,QString)));
 
+    connect(mDaemonIntf,
+            SIGNAL(ShareProgress(QString,int,int,QString)),
+            this,
+            SIGNAL(ShareProgress(QString,int,int,QString)));
+
 }
 
 
