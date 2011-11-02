@@ -4,6 +4,7 @@ CONFIG += ordered
 SUBDIRS += plugins
 SUBDIRS += daemon
 SUBDIRS += libmeegouxsharingclient
+SUBDIRS += libsharingclient-glib
 SUBDIRS += meego-ux-sharing-qml
 SUBDIRS += meego-ux-sharing-qml-ui
 

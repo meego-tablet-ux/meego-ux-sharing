@@ -1,0 +1,14 @@
+*~
+*.o
+*.pro.user
+Makefile
+*.so
+*.so.*
+*.moc/*
+moc_*.cpp
+*.obj/*
+*_interface.h
+*_interface.cpp
+*_adaptor.h
+*_adaptor.cpp
+
