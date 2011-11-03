@@ -13,6 +13,7 @@ DEPENDPATH += .
 CONFIG += link_pkgconfig \
 	  debug
 PKGCONFIG += glib-2.0
+QT -= core gui
 
 INCLUDEPATH += ../interfaces ../common
 
