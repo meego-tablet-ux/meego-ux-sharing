@@ -10,8 +10,8 @@
 
 #include <QFile>
 
-ExampleService::ExampleService(MeeGoUXSharingServiceInfo serviceInfo, QObject *parent):
-    MeeGoUXSharingService(serviceInfo, parent),
+ExampleService::ExampleService(SharingServiceInfo serviceInfo, QObject *parent):
+    SharingService(serviceInfo, parent),
     mShareID(0)
 {
     qDebug() << QString("Starting up ExampleService with mServiceInfo.serviceName of %1!").arg(mServiceInfo.serviceName);
@@ -62,7 +62,7 @@ bool ExampleService::GetServiceAvailable()
 QString ExampleService::GetServiceDesc()
 {
     qDebug() << QString("ExampleService::GetServiceDesc with mServiceInfo.serviceName of %1!").arg(mServiceInfo.serviceName);
-    return QString("The Example plugin is used for reference on how to plug services in to the MeeGo Sharing API/framework.");
+    return QString("The Example plugin is used for reference on how to plug services in to the Sharing API/framework.");
 }
 
 QString ExampleService::GetServiceName()
@@ -101,15 +101,15 @@ QString ExampleService::GetUIName(const QString &widgettype,
 {
     qDebug() << QString("ExampleService::GetUIName with mServiceInfo.serviceName of %1!").arg(mServiceInfo.serviceName);
 
-    if (sharetype == MEEGO_SHARE_TYPE_AUDIO)
+    if (sharetype == SHARE_TYPE_AUDIO)
         return QString();
 
     QString type;
     QString mult;
     if (widgettype == "QML") {
-        if (sharetype == MEEGO_SHARE_TYPE_IMAGE) {
+        if (sharetype == SHARE_TYPE_IMAGE) {
             type = "image";
-        } else if (sharetype == MEEGO_SHARE_TYPE_VIDEO) {
+        } else if (sharetype == SHARE_TYPE_VIDEO) {
             type = "video";
         } else {
             type = QString(sharetype).replace(QString("/"), QString("_"));   //Custom type support

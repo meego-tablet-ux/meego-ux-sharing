@@ -11,14 +11,14 @@
 
 #include <QObject>
 #include <QMetaType>
-#include <meegouxsharingservice.h>
-#include <meegouxsharingcommon.h>
+#include <sharingservice.h>
+#include <sharingcommon.h>
 
-class ExampleService : public MeeGoUXSharingService
+class ExampleService : public SharingService
 {
     Q_OBJECT
 public:
-    explicit ExampleService(MeeGoUXSharingServiceInfo serviceInfo, QObject *parent = 0);
+    explicit ExampleService(SharingServiceInfo serviceInfo, QObject *parent = 0);
     ~ExampleService();
 
 public slots:

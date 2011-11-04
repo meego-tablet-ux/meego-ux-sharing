@@ -19,10 +19,10 @@ Rectangle {
     width: 200
     //sharingObj is the interface to use in your custom QML to get access to the
     //sharing functionality and the list of files to share.
-    //It is an implementation of the MeeGoUXSharingClientQmlObj class, and you can
+    //It is an implementation of the SharingClientQmlObj class, and you can
     //access all of the Q_PROPERTY properties and Q_INVOKABLE member methods
     //exposed by the class. For further details on the class, please see the
-    //meegouxsharingclientqmlobj.h file, included in the libmeegouxsharingqml-devel package.
+    //sharingclientqmlobj.h file, included in the libsharingclient-qml-devel package.
     text: qsTr("Share Type: %1\nFile Count: %2").arg(sharingObj.shareTypeName, sharingObj.filesToShare.length)
   }
   ListView {
@@ -43,7 +43,7 @@ Rectangle {
         anchors.fill: parent
         onClicked: {
 	  //If you need to have multiple custom UI steps in your flow, just set customLoader.source to the next QML file you want to load, when you're ready to load it.
-          customLoader.source = "/usr/lib/qt4/imports/MeeGo/Sharing/plugins/example/foo_image_multi_step2.qml"
+          customLoader.source = "/usr/lib/qt4/imports/Sharing/plugins/example/foo_image_multi_step2.qml"
         }
       }
     }

@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+plugindir=${prefix}/lib/sharing/plugins
+includedir=${prefix}/include
+
+Name: sharing
+Description: Content sharing framework
+Version: 0.2.0
+Cflags: -I${includedir}/sharing -DSHARINGD_PLUGIN_PATH=\\\"/usr/lib/sharing/plugins\\\"

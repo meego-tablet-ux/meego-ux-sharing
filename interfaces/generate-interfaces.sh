@@ -3,7 +3,7 @@
 #make $(grep "interface.h: interfaces" Makefile  | grep -v qdbus | awk ' { print $1 } ' | sed 's/\:$//')
 for XML in ../interfaces/*.xml; do
 	NAME=$(basename ${XML} .xml);
-	qdbusxml2cpp -N -i meegouxsharingdbustypes.h -p ../interfaces/${NAME}_interface.h:../interfaces/${NAME}_interface.cpp ${XML};
+	qdbusxml2cpp -N -i sharingdbustypes.h -p ../interfaces/${NAME}_interface.h:../interfaces/${NAME}_interface.cpp ${XML};
 	if [[ $? -ne 0 ]]; then
 		echo "Error in ${XML}"
 	fi

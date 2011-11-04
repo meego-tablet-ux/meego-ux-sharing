@@ -1,0 +1,13 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/sharing/client-qt
+
+Name: libsharingclient-qt
+Description: Qt Client library for sharing
+Version: 0.2.0
+Libs: -L${libdir} -lsharingclient-qt
+Cflags: -I${includedir}
+Requires: QtDBus sharing
+
+

@@ -2,7 +2,7 @@ include(../common.pri)
 unix { 
     PREFIX = /usr
     LIBDIR = $$PREFIX/lib
-    INCLUDEDIR = $$PREFIX/include/meego-ux-sharing/client
+    INCLUDEDIR = $$PREFIX/include/sharing/client-glib
 }
 TEMPLATE = lib
 TARGET = sharingclient-glib

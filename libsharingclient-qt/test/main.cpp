@@ -7,14 +7,11 @@
  */
 
 #include <QCoreApplication>
-#include "sharingdaemon.h"
+#include "lscqtest.h"
 
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
-    SharingDaemon *sd = new SharingDaemon(&app);
-    if (sd->init())
-        return app.exec();
-    else
-        return 1;
+    SCTest *msc = new SCTest(&app);
+    return app.exec();
 }

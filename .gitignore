@@ -11,4 +11,4 @@ moc_*.cpp
 *_interface.cpp
 *_adaptor.h
 *_adaptor.cpp
-
+sharingd

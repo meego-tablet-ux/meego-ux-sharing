@@ -6,24 +6,24 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-#include <meegouxsharingserviceplugininterface.h>
+#include <sharingserviceplugininterface.h>
 #include <QObject>
 #include <QStringList>
-#include <meegouxsharingservice.h>
+#include <sharingservice.h>
 
 #include "exampleservice.h"
 
-class Example : public MeeGoUXSharingServicePluginInterface
+class Example : public SharingServicePluginInterface
 {
     Q_OBJECT
-    Q_INTERFACES(MeeGoUXSharingServicePluginInterface)
+    Q_INTERFACES(SharingServicePluginInterface)
 
 public:
     Example(QObject *parent = 0);
     ~Example();
     bool init();
     QHash<QString, QString> metaData();
-    QList<MeeGoUXSharingServiceInfo> getServices();
+    QList<SharingServiceInfo> getServices();
 
     int Share(QString serviceName, const QString &sharetype, ArrayOfShareItemStruct items, QString &errmessage);
     bool CancelShare(QString serviceName, int opid);
@@ -33,7 +33,7 @@ signals:
     void ShareProgress(const QString &service, int opid, int progress, const QString &message);
 
 private:
-    QList<MeeGoUXSharingServiceInfo> mServiceInfoList;
+    QList<SharingServiceInfo> mServiceInfoList;
     QList<ExampleService *> mServices;
 
 };

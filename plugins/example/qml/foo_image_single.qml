@@ -7,7 +7,7 @@
  */
 
 import Qt 4.7
-import MeeGo.Sharing 0.1
+import Sharing 0.1
 
 Rectangle {
   id: customArea
